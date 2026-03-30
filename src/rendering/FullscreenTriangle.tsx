@@ -25,6 +25,10 @@ type FullscreenUniforms = {
   uAspect: { value: number };
 };
 
+type FullscreenShaderMaterial = ShaderMaterial & {
+  uniforms: FullscreenUniforms;
+};
+
 export function FullscreenTriangle({
   observerCameraStateRef,
 }: FullscreenTriangleProps) {
@@ -39,7 +43,7 @@ export function FullscreenTriangle({
     return triangle;
   }, []);
 
-  const materialRef = useRef<ShaderMaterial | null>(null);
+  const materialRef = useRef<FullscreenShaderMaterial | null>(null);
   const uniforms = useMemo<FullscreenUniforms>(
     () => ({
       uCameraPos: { value: new Vector3(0, 0, 0) },
@@ -58,14 +62,13 @@ export function FullscreenTriangle({
     if (!material) {
       return;
     }
-    const shaderUniforms = material.uniforms as unknown as FullscreenUniforms;
 
-    shaderUniforms.uCameraPos.value.set(...cameraState.position);
-    shaderUniforms.uCameraRight.value.set(...cameraState.right);
-    shaderUniforms.uCameraUp.value.set(...cameraState.up);
-    shaderUniforms.uCameraForward.value.set(...cameraState.forward);
-    shaderUniforms.uFovY.value = cameraState.fovYRadians;
-    shaderUniforms.uAspect.value = cameraState.aspect;
+    material.uniforms.uCameraPos.value.set(...cameraState.position);
+    material.uniforms.uCameraRight.value.set(...cameraState.right);
+    material.uniforms.uCameraUp.value.set(...cameraState.up);
+    material.uniforms.uCameraForward.value.set(...cameraState.forward);
+    material.uniforms.uFovY.value = cameraState.fovYRadians;
+    material.uniforms.uAspect.value = cameraState.aspect;
   });
 
   return (
