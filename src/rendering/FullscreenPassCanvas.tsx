@@ -1,11 +1,17 @@
+import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
+import type { ObserverCameraState } from "./camera-state.ts";
 import { FullscreenTriangle } from "./FullscreenTriangle.tsx";
 
 type FullscreenPassCanvasProps = {
   className?: string;
+  observerCameraStateRef: MutableRefObject<ObserverCameraState>;
 };
 
-export function FullscreenPassCanvas({ className }: FullscreenPassCanvasProps) {
+export function FullscreenPassCanvas({
+  className,
+  observerCameraStateRef,
+}: FullscreenPassCanvasProps) {
   return (
     <Canvas
       className={className}
@@ -20,7 +26,7 @@ export function FullscreenPassCanvas({ className }: FullscreenPassCanvasProps) {
         far: 100,
       }}
     >
-      <FullscreenTriangle />
+      <FullscreenTriangle observerCameraStateRef={observerCameraStateRef} />
     </Canvas>
   );
 }

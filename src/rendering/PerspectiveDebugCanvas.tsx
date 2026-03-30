@@ -1,12 +1,21 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useMemo } from "react";
+import {
+  MathUtils,
+  PerspectiveCamera as ThreePerspectiveCamera,
+  Vector3,
+} from "three";
+import type { ObserverCameraState } from "./camera-state.ts";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
+  onCameraUpdate: (cameraState: ObserverCameraState) => void;
 };
 
 export function PerspectiveDebugCanvas({
   className,
+  onCameraUpdate,
 }: PerspectiveDebugCanvasProps) {
   return (
     <Canvas className={className}>
@@ -35,6 +44,46 @@ export function PerspectiveDebugCanvas({
 
       <gridHelper args={[16, 16, "#4b5563", "#374151"]} />
       <axesHelper args={[2]} />
+
+      <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
     </Canvas>
   );
+}
+
+type PerspectiveCameraStatePublisherProps = {
+  onCameraUpdate: (cameraState: ObserverCameraState) => void;
+};
+
+function PerspectiveCameraStatePublisher({
+  onCameraUpdate,
+}: PerspectiveCameraStatePublisherProps) {
+  const worldForward = useMemo(() => new Vector3(), []);
+  const worldRight = useMemo(() => new Vector3(), []);
+  const worldUp = useMemo(() => new Vector3(), []);
+
+  useFrame(({ camera }) => {
+    if (!(camera instanceof ThreePerspectiveCamera)) {
+      return;
+    }
+
+    const perspectiveCamera = camera;
+    perspectiveCamera.getWorldDirection(worldForward);
+    worldRight.set(1, 0, 0).applyQuaternion(perspectiveCamera.quaternion);
+    worldUp.set(0, 1, 0).applyQuaternion(perspectiveCamera.quaternion);
+
+    onCameraUpdate({
+      position: [
+        perspectiveCamera.position.x,
+        perspectiveCamera.position.y,
+        perspectiveCamera.position.z,
+      ],
+      right: [worldRight.x, worldRight.y, worldRight.z],
+      up: [worldUp.x, worldUp.y, worldUp.z],
+      forward: [worldForward.x, worldForward.y, worldForward.z],
+      fovYRadians: MathUtils.degToRad(perspectiveCamera.fov),
+      aspect: perspectiveCamera.aspect,
+    });
+  });
+
+  return null;
 }
