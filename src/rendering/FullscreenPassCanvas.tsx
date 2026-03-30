@@ -1,9 +1,14 @@
 import { Canvas } from "@react-three/fiber";
 import { FullscreenTriangle } from "./FullscreenTriangle.tsx";
 
-export function FullscreenPassCanvas() {
+type FullscreenPassCanvasProps = {
+  className?: string;
+};
+
+export function FullscreenPassCanvas({ className }: FullscreenPassCanvasProps) {
   return (
     <Canvas
+      className={className}
       orthographic
       camera={{
         position: [0, 0, 1],

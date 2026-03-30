@@ -1,5 +1,5 @@
-import { FullscreenPassCanvas } from "./rendering/FullscreenPassCanvas.tsx";
+import { RenderingRoot } from "./rendering/RenderingRoot.tsx";
 
 export function App() {
-  return <FullscreenPassCanvas />;
+  return <RenderingRoot />;
 }
