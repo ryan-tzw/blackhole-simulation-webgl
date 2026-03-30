@@ -1,7 +1,7 @@
 import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import type { ObserverCameraState } from "./camera-state.ts";
-import { FullscreenTriangle } from "./FullscreenTriangle.tsx";
+import type { ObserverCameraState } from "./camera-state";
+import { FullscreenTriangle } from "./FullscreenTriangle";
 
 type FullscreenPassCanvasProps = {
   className?: string;

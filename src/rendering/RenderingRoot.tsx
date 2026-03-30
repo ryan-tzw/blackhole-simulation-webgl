@@ -2,9 +2,9 @@ import { useCallback, useRef } from "react";
 import {
   DEFAULT_OBSERVER_CAMERA_STATE,
   type ObserverCameraState,
-} from "./camera-state.ts";
-import { FullscreenPassCanvas } from "./FullscreenPassCanvas.tsx";
-import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas.tsx";
+} from "./camera-state";
+import { FullscreenPassCanvas } from "./FullscreenPassCanvas";
+import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas";
 import "./rendering-root.css";
 
 export function RenderingRoot() {

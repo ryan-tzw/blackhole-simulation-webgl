@@ -6,7 +6,7 @@ import {
   PerspectiveCamera as ThreePerspectiveCamera,
   Vector3,
 } from "three";
-import type { ObserverCameraState } from "./camera-state.ts";
+import type { ObserverCameraState } from "./camera-state";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
