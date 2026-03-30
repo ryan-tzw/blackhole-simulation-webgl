@@ -1,33 +1,17 @@
 import type { MutableRefObject } from "react";
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import {
-  BufferAttribute,
-  BufferGeometry,
-  DoubleSide,
-  ShaderMaterial,
-  Vector3,
-} from "three";
+import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
 import type { ObserverCameraState } from "./camera-state.ts";
-import fragmentShader from "../shaders/fullscreen-pass.frag.glsl";
-import vertexShader from "../shaders/fullscreen-pass.vert.glsl";
+import { FullscreenPassMaterial } from "./FullscreenPassMaterial.ts";
 
 type FullscreenTriangleProps = {
   observerCameraStateRef: MutableRefObject<ObserverCameraState>;
 };
 
-type FullscreenUniforms = {
-  uCameraPos: { value: Vector3 };
-  uCameraRight: { value: Vector3 };
-  uCameraUp: { value: Vector3 };
-  uCameraForward: { value: Vector3 };
-  uFovY: { value: number };
-  uAspect: { value: number };
-};
-
-type FullscreenShaderMaterial = ShaderMaterial & {
-  uniforms: FullscreenUniforms;
-};
+type FullscreenPassMaterialInstance = InstanceType<
+  typeof FullscreenPassMaterial
+>;
 
 export function FullscreenTriangle({
   observerCameraStateRef,
@@ -43,18 +27,7 @@ export function FullscreenTriangle({
     return triangle;
   }, []);
 
-  const materialRef = useRef<FullscreenShaderMaterial | null>(null);
-  const uniforms = useMemo<FullscreenUniforms>(
-    () => ({
-      uCameraPos: { value: new Vector3(0, 0, 0) },
-      uCameraRight: { value: new Vector3(1, 0, 0) },
-      uCameraUp: { value: new Vector3(0, 1, 0) },
-      uCameraForward: { value: new Vector3(0, 0, -1) },
-      uFovY: { value: 1.0 },
-      uAspect: { value: 1.0 },
-    }),
-    [],
-  );
+  const materialRef = useRef<FullscreenPassMaterialInstance | null>(null);
 
   useFrame(() => {
     const cameraState = observerCameraStateRef.current;
@@ -63,22 +36,20 @@ export function FullscreenTriangle({
       return;
     }
 
-    material.uniforms.uCameraPos.value.set(...cameraState.position);
-    material.uniforms.uCameraRight.value.set(...cameraState.right);
-    material.uniforms.uCameraUp.value.set(...cameraState.up);
-    material.uniforms.uCameraForward.value.set(...cameraState.forward);
-    material.uniforms.uFovY.value = cameraState.fovYRadians;
-    material.uniforms.uAspect.value = cameraState.aspect;
+    material.uCameraPos.set(...cameraState.position);
+    material.uCameraRight.set(...cameraState.right);
+    material.uCameraUp.set(...cameraState.up);
+    material.uCameraForward.set(...cameraState.forward);
+    material.uFovY = cameraState.fovYRadians;
+    material.uAspect = cameraState.aspect;
   });
 
   return (
     <mesh geometry={geometry} frustumCulled={false}>
-      <shaderMaterial
+      <fullscreenPassMaterial
+        key={FullscreenPassMaterial.key}
         ref={materialRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
         side={DoubleSide}
-        uniforms={uniforms}
       />
     </mesh>
   );
