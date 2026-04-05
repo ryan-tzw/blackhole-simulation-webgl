@@ -8,7 +8,9 @@ uniform float uFovY;
 uniform float uAspect;
 
 void main() {
+  // map from [0, 1] to [-1, 1]
   vec2 ndc = vUv * 2.0 - 1.0;
+
   float tanHalfFov = tan(uFovY * 0.5);
   vec2 rayPlane = vec2(ndc.x * uAspect * tanHalfFov, ndc.y * tanHalfFov);
 

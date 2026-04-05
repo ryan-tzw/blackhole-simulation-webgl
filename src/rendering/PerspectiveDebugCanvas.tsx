@@ -1,12 +1,16 @@
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Grid, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import {
+  DoubleSide,
   MathUtils,
   PerspectiveCamera as ThreePerspectiveCamera,
   Vector3,
 } from "three";
-import type { ObserverCameraState } from "./camera-state";
+import {
+  OBSERVER_CAMERA_DEFAULTS,
+  type ObserverCameraState,
+} from "./camera-state";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
@@ -23,12 +27,12 @@ export function PerspectiveDebugCanvas({
 
       <PerspectiveCamera
         makeDefault
-        position={[4, 3, 4]}
-        fov={50}
-        near={0.1}
-        far={200}
+        position={OBSERVER_CAMERA_DEFAULTS.position}
+        fov={OBSERVER_CAMERA_DEFAULTS.fovDegrees}
+        near={OBSERVER_CAMERA_DEFAULTS.near}
+        far={OBSERVER_CAMERA_DEFAULTS.far}
       />
-      <OrbitControls />
+      <OrbitControls target={OBSERVER_CAMERA_DEFAULTS.target} />
 
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 6, 3]} intensity={1.2} />
@@ -42,7 +46,12 @@ export function PerspectiveDebugCanvas({
         />
       </mesh>
 
-      <gridHelper args={[16, 16, "#4b5563", "#374151"]} />
+      <Grid
+        args={[16, 16]}
+        cellColor="#4b5563"
+        sectionColor="#374151"
+        side={DoubleSide}
+      />
       <axesHelper args={[2]} />
 
       <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
@@ -72,14 +81,10 @@ function PerspectiveCameraStatePublisher({
     worldUp.set(0, 1, 0).applyQuaternion(perspectiveCamera.quaternion);
 
     onCameraUpdate({
-      position: [
-        perspectiveCamera.position.x,
-        perspectiveCamera.position.y,
-        perspectiveCamera.position.z,
-      ],
-      right: [worldRight.x, worldRight.y, worldRight.z],
-      up: [worldUp.x, worldUp.y, worldUp.z],
-      forward: [worldForward.x, worldForward.y, worldForward.z],
+      position: [...perspectiveCamera.position.toArray()],
+      right: [...worldRight.toArray()],
+      up: [...worldUp.toArray()],
+      forward: [...worldForward.toArray()],
       fovYRadians: MathUtils.degToRad(perspectiveCamera.fov),
       aspect: perspectiveCamera.aspect,
     });
