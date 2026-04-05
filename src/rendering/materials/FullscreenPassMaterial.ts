@@ -1,9 +1,9 @@
 import { shaderMaterial } from "@react-three/drei";
 import { Vector3 } from "three";
-import fragmentShader from "../shaders/fullscreen-pass.frag.glsl";
-import vertexShader from "../shaders/fullscreen-pass.vert.glsl";
+import fragmentShader from "@/shaders/fullscreen-pass.frag.glsl";
+import vertexShader from "@/shaders/fullscreen-pass.vert.glsl";
 import { extend } from "@react-three/fiber";
-import { DEFAULT_OBSERVER_CAMERA_STATE } from "./camera-state";
+import { DEFAULT_OBSERVER_CAMERA_STATE } from "@/rendering/camera-state";
 
 export const FullscreenPassMaterial = shaderMaterial(
   {

@@ -3,7 +3,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
 import type { ObserverCameraState } from "./camera-state";
-import { FullscreenPassMaterial } from "./FullscreenPassMaterial";
+import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 
 type FullscreenTriangleProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;

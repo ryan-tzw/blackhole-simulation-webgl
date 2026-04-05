@@ -18,6 +18,6 @@ void main() {
     uCameraForward + rayPlane.x * uCameraRight + rayPlane.y * uCameraUp
   );
 
-  vec3 debugColor = 0.5 * (rayDirection + vec3(1.0));
+  vec3 debugColor = 0.5 * (rayDirection + vec3(1.0)); // Map from [-1, 1] to [0, 1] for visualization
   gl_FragColor = vec4(debugColor, 1.0);
 }
