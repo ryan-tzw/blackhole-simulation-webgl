@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
 import type { ObserverCameraState } from "./camera-state";
+import { FullscreenPassBendDebugMaterial } from "./materials/FullscreenPassBendDebugMaterial";
 import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./materials/FullscreenPassMarchMaterial";
 import type { PassShaderMode } from "./pass-shader-mode";
@@ -17,6 +18,9 @@ type FullscreenPassMaterialInstance = InstanceType<
 >;
 type FullscreenPassMarchMaterialInstance = InstanceType<
   typeof FullscreenPassMarchMaterial
+>;
+type FullscreenPassBendDebugMaterialInstance = InstanceType<
+  typeof FullscreenPassBendDebugMaterial
 >;
 
 export function FullscreenTriangle({
@@ -39,6 +43,8 @@ export function FullscreenTriangle({
   const marchMaterialRef = useRef<FullscreenPassMarchMaterialInstance | null>(
     null,
   );
+  const bendDebugMaterialRef =
+    useRef<FullscreenPassBendDebugMaterialInstance | null>(null);
 
   useFrame(() => {
     const cameraState = observerCameraStateRef.current;
@@ -68,6 +74,7 @@ export function FullscreenTriangle({
 
     updateMaterial(debugMaterialRef.current);
     updateMaterial(marchMaterialRef.current);
+    updateMaterial(bendDebugMaterialRef.current);
   });
 
   return (
@@ -78,10 +85,16 @@ export function FullscreenTriangle({
           ref={debugMaterialRef}
           side={DoubleSide}
         />
-      ) : (
+      ) : mode === "march" ? (
         <fullscreenPassMarchMaterial
           key={FullscreenPassMarchMaterial.key}
           ref={marchMaterialRef}
+          side={DoubleSide}
+        />
+      ) : (
+        <fullscreenPassBendDebugMaterial
+          key={FullscreenPassBendDebugMaterial.key}
+          ref={bendDebugMaterialRef}
           side={DoubleSide}
         />
       )}
