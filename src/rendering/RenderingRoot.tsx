@@ -5,7 +5,7 @@ import {
   type ObserverCameraState,
 } from "./camera-state";
 import { FullscreenPassCanvas } from "./FullscreenPassCanvas";
-import type { PassShaderMode } from "./FullscreenTriangle";
+import { PASS_SHADER_MODES, type PassShaderMode } from "./pass-shader-mode";
 import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas";
 import "./rendering-root.css";
 
@@ -17,8 +17,6 @@ export function RenderingRoot() {
   const handleCameraUpdate = useCallback((cameraState: ObserverCameraState) => {
     observerCameraStateRef.current = cameraState;
   }, []);
-
-  const PASS_SHADER_MODES = ["debug", "march"] as PassShaderMode[];
 
   const { passMode } = useControls("Render", {
     passMode: {

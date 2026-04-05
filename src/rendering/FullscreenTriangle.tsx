@@ -5,6 +5,7 @@ import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
 import type { ObserverCameraState } from "./camera-state";
 import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./materials/FullscreenPassMarchMaterial";
+import type { PassShaderMode } from "./pass-shader-mode";
 
 type FullscreenTriangleProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
@@ -17,7 +18,6 @@ type FullscreenPassMaterialInstance = InstanceType<
 type FullscreenPassMarchMaterialInstance = InstanceType<
   typeof FullscreenPassMarchMaterial
 >;
-export type PassShaderMode = "debug" | "march";
 
 export function FullscreenTriangle({
   observerCameraStateRef,

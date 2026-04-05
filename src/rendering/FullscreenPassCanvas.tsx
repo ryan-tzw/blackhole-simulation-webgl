@@ -1,7 +1,8 @@
 import type { RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import type { ObserverCameraState } from "./camera-state";
-import { FullscreenTriangle, type PassShaderMode } from "./FullscreenTriangle";
+import { FullscreenTriangle } from "./FullscreenTriangle";
+import type { PassShaderMode } from "./pass-shader-mode";
 import { Perf } from "r3f-perf";
 
 type FullscreenPassCanvasProps = {
