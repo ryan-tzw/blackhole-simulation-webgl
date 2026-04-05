@@ -1,4 +1,4 @@
-import type { MutableRefObject } from "react";
+import type { RefObject } from "react";
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
@@ -6,7 +6,7 @@ import type { ObserverCameraState } from "./camera-state";
 import { FullscreenPassMaterial } from "./FullscreenPassMaterial";
 
 type FullscreenTriangleProps = {
-  observerCameraStateRef: MutableRefObject<ObserverCameraState>;
+  observerCameraStateRef: RefObject<ObserverCameraState>;
 };
 
 type FullscreenPassMaterialInstance = InstanceType<
