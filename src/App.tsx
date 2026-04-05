@@ -1,5 +1,11 @@
+import { Leva } from "leva";
 import { RenderingRoot } from "./rendering/RenderingRoot";
 
 export function App() {
-  return <RenderingRoot />;
+  return (
+    <>
+      <Leva />
+      <RenderingRoot />
+    </>
+  );
 }

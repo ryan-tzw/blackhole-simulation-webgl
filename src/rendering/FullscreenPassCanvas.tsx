@@ -29,7 +29,7 @@ export function FullscreenPassCanvas({
         far: 100,
       }}
     >
-      <Perf />
+      <Perf position="bottom-left" />
       <FullscreenTriangle
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
