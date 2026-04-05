@@ -1,4 +1,9 @@
-import { Grid, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import {
+  Environment,
+  Grid,
+  OrbitControls,
+  PerspectiveCamera,
+} from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import {
@@ -53,6 +58,11 @@ export function PerspectiveDebugCanvas({
         side={DoubleSide}
       />
       <axesHelper args={[2]} />
+
+      <Environment
+        files="/assets/env/kloppenheim_06_puresky_1k.hdr"
+        background
+      />
 
       <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
     </Canvas>

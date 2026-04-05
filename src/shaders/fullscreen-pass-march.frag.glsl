@@ -9,13 +9,22 @@ uniform float uAspect;
 
 uniform vec3 uBlackHolePosition;
 uniform float uBlackHoleRadius;
-uniform vec3 uMissColor;
+uniform sampler2D uEnvMap;
 
 const int MAX_STEPS = 128;
 const float STEP_SIZE = 0.1;
 
 bool isInsideBlackHole(vec3 worldPosition) {
   return distance(worldPosition, uBlackHolePosition) <= uBlackHoleRadius;
+}
+
+vec2 directionToEquirectUv(vec3 dir) {
+  const float INV_PI = 0.31830988618;
+  const float INV_TWO_PI = 0.15915494309;
+
+  float u = atan(dir.z, dir.x) * INV_TWO_PI + 0.5;
+  float v = asin(clamp(dir.y, -1.0, 1.0)) * INV_PI + 0.5;
+  return vec2(u, v);
 }
 
 void main() {
@@ -37,5 +46,7 @@ void main() {
     }
   }
 
-  gl_FragColor = vec4(uMissColor, 1.0);
+  vec2 envUv = directionToEquirectUv(rayDirection);
+  vec3 envColor = texture2D(uEnvMap, envUv).rgb;
+  gl_FragColor = vec4(envColor, 1.0);
 }

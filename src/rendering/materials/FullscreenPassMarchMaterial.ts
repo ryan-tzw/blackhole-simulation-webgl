@@ -1,9 +1,18 @@
 import { shaderMaterial } from "@react-three/drei";
-import { Vector3 } from "three";
+import { EquirectangularReflectionMapping, LinearFilter, Vector3 } from "three";
 import fragmentShader from "@/shaders/fullscreen-pass-march.frag.glsl";
 import vertexShader from "@/shaders/fullscreen-pass.vert.glsl";
 import { extend } from "@react-three/fiber";
 import { DEFAULT_OBSERVER_CAMERA_STATE } from "@/rendering/camera-state";
+import { HDRLoader } from "three/addons/loaders/HDRLoader.js";
+
+const envMapTexture = new HDRLoader().load(
+  "/assets/env/kloppenheim_06_puresky_1k.hdr",
+);
+envMapTexture.mapping = EquirectangularReflectionMapping;
+envMapTexture.magFilter = LinearFilter;
+envMapTexture.minFilter = LinearFilter;
+envMapTexture.generateMipmaps = false;
 
 export const FullscreenPassMarchMaterial = shaderMaterial(
   {
@@ -15,7 +24,7 @@ export const FullscreenPassMarchMaterial = shaderMaterial(
     uAspect: DEFAULT_OBSERVER_CAMERA_STATE.aspect,
     uBlackHolePosition: new Vector3(0, 0, 0),
     uBlackHoleRadius: 1.0,
-    uMissColor: new Vector3(0.8, 0.8, 0.8),
+    uEnvMap: envMapTexture,
   },
   vertexShader,
   fragmentShader,
