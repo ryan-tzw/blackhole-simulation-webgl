@@ -10,6 +10,7 @@ uniform float uAspect;
 uniform vec3 uBlackHolePosition;
 uniform float uBlackHoleRadius;
 uniform sampler2D uEnvMap;
+uniform float uEnvExposure;
 
 const int MAX_STEPS = 128;
 const float STEP_SIZE = 0.1;
@@ -25,6 +26,19 @@ vec2 directionToEquirectUv(vec3 dir) {
   float u = atan(dir.z, dir.x) * INV_TWO_PI + 0.5;
   float v = asin(clamp(dir.y, -1.0, 1.0)) * INV_PI + 0.5;
   return vec2(u, v);
+}
+
+vec3 acesTonemap(vec3 color) {
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  return clamp((color * (a * color + b)) / (color * (c * color + d) + e), 0.0, 1.0);
+}
+
+vec3 linearToSrgb(vec3 color) {
+  return pow(clamp(color, 0.0, 1.0), vec3(1.0 / 2.2));
 }
 
 void main() {
@@ -47,6 +61,7 @@ void main() {
   }
 
   vec2 envUv = directionToEquirectUv(rayDirection);
-  vec3 envColor = texture2D(uEnvMap, envUv).rgb;
-  gl_FragColor = vec4(envColor, 1.0);
+  vec3 envColor = texture2D(uEnvMap, envUv).rgb * uEnvExposure;
+  vec3 toneMapped = acesTonemap(envColor);
+  gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }

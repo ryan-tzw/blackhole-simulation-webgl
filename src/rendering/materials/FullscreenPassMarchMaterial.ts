@@ -25,6 +25,7 @@ export const FullscreenPassMarchMaterial = shaderMaterial(
     uBlackHolePosition: new Vector3(0, 0, 0),
     uBlackHoleRadius: 1.0,
     uEnvMap: envMapTexture,
+    uEnvExposure: 1.0,
   },
   vertexShader,
   fragmentShader,
