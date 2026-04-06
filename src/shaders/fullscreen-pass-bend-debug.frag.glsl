@@ -54,26 +54,27 @@ void main() {
   }
 
   vec3 eRadial = cameraPos / r0; // e means unit vector, so this = unit radial vector
-  float radialRate = dot(rayDirection, eRadial);
-  vec3 tangent = rayDirection - radialRate * eRadial;
+  float radialRate = dot(rayDirection, eRadial); // radial component of ray velocity
+  vec3 tangent = rayDirection - radialRate * eRadial; // tangent component of ray velocity
   float tangentLen = length(tangent);
 
+  // near-radial trajectory -> ray goes straight in or out so no need to solve ODE
   if (tangentLen < EPS) {
     gl_FragColor = vec4(radialRate < 0.0 ? uCaptureColor : uEscapeColor, 1.0);
     return;
   }
 
   vec3 ePhi = tangent / tangentLen;
-  float dphi_dlambda = dot(rayDirection, ePhi) / r0;
+  float dphi_dlambda = dot(rayDirection, ePhi) / r0; // rate of change of azimuthal angle phi wrt. path param lambda
   if (abs(dphi_dlambda) < EPS) {
     gl_FragColor = vec4(uMaxIterColor, 1.0);
     return;
   }
 
-  // initial conditions for the ODE (lambda is a path parameter, not spacetime interval)
+  // initial conditions for the ODE (lambda = path parameter)
   float u = 1.0 / r0;
   float du_dlambda = -u * u * radialRate;
-  float uPrime = du_dlambda / dphi_dlambda;
+  float uPrime = du_dlambda / dphi_dlambda; // du/dphi
 
   for (int i = 0; i < MAX_STEPS; i++) {
     rk4StepSecondOrder(u, uPrime, uPhiStep, uRs);
@@ -83,6 +84,8 @@ void main() {
       return;
     }
 
+    // u <= 0 should be physically impossible (negative radius),
+    // but if it happens due to numerical issues we treat it as escape
     if (u <= 0.0) {
       gl_FragColor = vec4(uEscapeColor, 1.0);
       return;

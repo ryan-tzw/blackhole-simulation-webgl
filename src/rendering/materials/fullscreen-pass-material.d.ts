@@ -1,4 +1,5 @@
 import { ReactThreeFiber } from "@react-three/fiber";
+import { FullscreenPassBendEnvMaterial } from "./FullscreenPassBendEnvMaterial";
 import { FullscreenPassBendDebugMaterial } from "./FullscreenPassBendDebugMaterial";
 import { FullscreenPassMaterial } from "./FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./FullscreenPassMarchMaterial";
@@ -16,6 +17,10 @@ declare module "@react-three/fiber" {
     fullscreenPassBendDebugMaterial: ReactThreeFiber.Object3DNode<
       InstanceType<typeof FullscreenPassBendDebugMaterial>,
       typeof FullscreenPassBendDebugMaterial
+    >;
+    fullscreenPassBendEnvMaterial: ReactThreeFiber.Object3DNode<
+      InstanceType<typeof FullscreenPassBendEnvMaterial>,
+      typeof FullscreenPassBendEnvMaterial
     >;
   }
 }

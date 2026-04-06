@@ -20,7 +20,7 @@ export function RenderingRoot() {
 
   const { passMode } = useControls("Render", {
     passMode: {
-      value: "march" as PassShaderMode,
+      value: "bend-env" as PassShaderMode,
       options: PASS_SHADER_MODES,
     },
   });

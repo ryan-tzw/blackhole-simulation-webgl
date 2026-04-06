@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
 import type { ObserverCameraState } from "./camera-state";
+import { FullscreenPassBendEnvMaterial } from "./materials/FullscreenPassBendEnvMaterial";
 import { FullscreenPassBendDebugMaterial } from "./materials/FullscreenPassBendDebugMaterial";
 import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./materials/FullscreenPassMarchMaterial";
@@ -21,6 +22,9 @@ type FullscreenPassMarchMaterialInstance = InstanceType<
 >;
 type FullscreenPassBendDebugMaterialInstance = InstanceType<
   typeof FullscreenPassBendDebugMaterial
+>;
+type FullscreenPassBendEnvMaterialInstance = InstanceType<
+  typeof FullscreenPassBendEnvMaterial
 >;
 
 export function FullscreenTriangle({
@@ -45,6 +49,8 @@ export function FullscreenTriangle({
   );
   const bendDebugMaterialRef =
     useRef<FullscreenPassBendDebugMaterialInstance | null>(null);
+  const bendEnvMaterialRef =
+    useRef<FullscreenPassBendEnvMaterialInstance | null>(null);
 
   useFrame(() => {
     const cameraState = observerCameraStateRef.current;
@@ -75,6 +81,7 @@ export function FullscreenTriangle({
     updateMaterial(debugMaterialRef.current);
     updateMaterial(marchMaterialRef.current);
     updateMaterial(bendDebugMaterialRef.current);
+    updateMaterial(bendEnvMaterialRef.current);
   });
 
   return (
@@ -91,10 +98,16 @@ export function FullscreenTriangle({
           ref={marchMaterialRef}
           side={DoubleSide}
         />
-      ) : (
+      ) : mode === "bend-debug" ? (
         <fullscreenPassBendDebugMaterial
           key={FullscreenPassBendDebugMaterial.key}
           ref={bendDebugMaterialRef}
+          side={DoubleSide}
+        />
+      ) : (
+        <fullscreenPassBendEnvMaterial
+          key={FullscreenPassBendEnvMaterial.key}
+          ref={bendEnvMaterialRef}
           side={DoubleSide}
         />
       )}
