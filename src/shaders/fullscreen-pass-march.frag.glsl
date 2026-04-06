@@ -15,30 +15,11 @@ uniform float uEnvExposure;
 const int MAX_STEPS = 128;
 const float STEP_SIZE = 0.1;
 
+#include ./chunks/env/equirect.glsl;
+#include ./chunks/color/aces-tonemap.glsl;
+
 bool isInsideBlackHole(vec3 worldPosition) {
   return distance(worldPosition, uBlackHolePosition) <= uBlackHoleRadius;
-}
-
-vec2 directionToEquirectUv(vec3 dir) {
-  const float INV_PI = 0.31830988618;
-  const float INV_TWO_PI = 0.15915494309;
-
-  float u = atan(dir.z, dir.x) * INV_TWO_PI + 0.5;
-  float v = asin(clamp(dir.y, -1.0, 1.0)) * INV_PI + 0.5;
-  return vec2(u, v);
-}
-
-vec3 acesTonemap(vec3 color) {
-  const float a = 2.51;
-  const float b = 0.03;
-  const float c = 2.43;
-  const float d = 0.59;
-  const float e = 0.14;
-  return clamp((color * (a * color + b)) / (color * (c * color + d) + e), 0.0, 1.0);
-}
-
-vec3 linearToSrgb(vec3 color) {
-  return pow(clamp(color, 0.0, 1.0), vec3(1.0 / 2.2));
 }
 
 void main() {
