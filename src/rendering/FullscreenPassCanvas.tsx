@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import type { ObserverCameraState } from "./camera-state";
 import { FullscreenTriangle } from "./FullscreenTriangle";
 import type { PassShaderMode } from "./pass-shader-mode";
+import { FXAAPostProcess } from "./postprocessing/FXAAPostProcess";
 import { Perf } from "r3f-perf";
 
 type FullscreenPassCanvasProps = {
@@ -35,6 +36,7 @@ export function FullscreenPassCanvas({
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
       />
+      <FXAAPostProcess />
     </Canvas>
   );
 }
