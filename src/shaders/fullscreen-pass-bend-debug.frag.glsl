@@ -8,7 +8,10 @@ uniform float uFovY;
 uniform float uAspect;
 
 uniform float uRs;
-uniform float uPhiStep;
+uniform float uPhiStepMin;
+uniform float uPhiStepMax;
+uniform float uMaxRelUChange;
+uniform float uMaxAbsUPrimeChange;
 uniform float uEscapeRadius;
 uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
@@ -20,6 +23,7 @@ const float EPS = 1e-6;
 const float LARGE_VALUE = 1e8;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
+#include ./chunks/geodesics/adaptive-phi-step.glsl;
 
 void main() {
   // Convert from NDC to world space ray direction
@@ -63,7 +67,8 @@ void main() {
   float uPrime = du_dlambda / dphi_dlambda; // du/dphi
 
   for (int i = 0; i < MAX_STEPS; i++) {
-    rk4StepSecondOrder(u, uPrime, uPhiStep, uRs);
+    float phiStep = adaptivePhiStep(u, uPrime, uRs);
+    rk4StepSecondOrder(u, uPrime, phiStep, uRs);
 
     if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
       gl_FragColor = vec4(uMaxIterColor, 1.0);
