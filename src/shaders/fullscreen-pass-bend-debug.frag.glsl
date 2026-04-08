@@ -54,17 +54,9 @@ void main() {
     return;
   }
 
-  vec3 ePhi = tangent / tangentLen;
-  float dphi_dlambda = dot(rayDirection, ePhi) / r0; // rate of change of azimuthal angle phi wrt. path param lambda
-  if (abs(dphi_dlambda) < EPS) {
-    gl_FragColor = vec4(uMaxIterColor, 1.0);
-    return;
-  }
-
   // initial conditions for the ODE (lambda = path parameter)
   float u = 1.0 / r0;
-  float du_dlambda = -u * u * radialRate;
-  float uPrime = du_dlambda / dphi_dlambda; // du/dphi
+  float uPrime = -(u * radialRate) / tangentLen; // du/dphi (scale-invariant form)
 
   for (int i = 0; i < MAX_STEPS; i++) {
     float phiStep = adaptivePhiStep(u, uPrime, uRs);
