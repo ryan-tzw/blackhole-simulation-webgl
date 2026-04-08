@@ -9,13 +9,12 @@ uniform float uAspect;
 
 uniform vec3 uBlackHolePosition;
 uniform float uBlackHoleRadius;
-uniform sampler2D uEnvMap;
+uniform samplerCube uEnvMap;
 uniform float uEnvExposure;
 
 const int MAX_STEPS = 128;
 const float STEP_SIZE = 0.1;
 
-#include ./chunks/env/equirect.glsl;
 #include ./chunks/color/aces-tonemap.glsl;
 
 bool isInsideBlackHole(vec3 worldPosition) {
@@ -41,8 +40,7 @@ void main() {
     }
   }
 
-  vec2 envUv = directionToEquirectUv(rayDirection);
-  vec3 envColor = texture2D(uEnvMap, envUv).rgb * uEnvExposure;
+  vec3 envColor = textureCube(uEnvMap, normalize(rayDirection)).rgb * uEnvExposure;
   vec3 toneMapped = acesTonemap(envColor);
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }

@@ -1,18 +1,19 @@
 import { shaderMaterial } from "@react-three/drei";
-import { EquirectangularReflectionMapping, LinearFilter, Vector3 } from "three";
+import { CubeTextureLoader, SRGBColorSpace, Vector3 } from "three";
 import fragmentShader from "@/shaders/fullscreen-pass-bend-env.frag.glsl";
 import vertexShader from "@/shaders/fullscreen-pass.vert.glsl";
 import { extend } from "@react-three/fiber";
 import { DEFAULT_OBSERVER_CAMERA_STATE } from "@/rendering/camera-state";
-import { HDRLoader } from "three/addons/loaders/HDRLoader.js";
 
-const envMapTexture = new HDRLoader().load(
-  "/assets/env/kloppenheim_06_puresky_1k.hdr",
-);
-envMapTexture.mapping = EquirectangularReflectionMapping;
-envMapTexture.magFilter = LinearFilter;
-envMapTexture.minFilter = LinearFilter;
-envMapTexture.generateMipmaps = false;
+const envMapTexture = new CubeTextureLoader().load([
+  "/assets/cubemap/right.png",
+  "/assets/cubemap/left.png",
+  "/assets/cubemap/top.png",
+  "/assets/cubemap/bottom.png",
+  "/assets/cubemap/front.png",
+  "/assets/cubemap/back.png",
+]);
+envMapTexture.colorSpace = SRGBColorSpace;
 
 export const FullscreenPassBendEnvMaterial = shaderMaterial(
   {

@@ -17,7 +17,7 @@ uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
 uniform vec3 uMaxIterColor;
 
-uniform sampler2D uEnvMap;
+uniform samplerCube uEnvMap;
 uniform float uEnvExposure;
 
 const int MAX_STEPS = 2048;
@@ -26,7 +26,6 @@ const float LARGE_VALUE = 1e8;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
-#include ./chunks/env/equirect.glsl;
 #include ./chunks/color/aces-tonemap.glsl;
 
 // Converts integrated 2D geodesic state back to world-space ray direction
@@ -56,8 +55,7 @@ vec3 bentRayDirection(
 }
 
 void renderEnv(vec3 worldDirection) {
-  vec2 envUv = directionToEquirectUv(normalize(worldDirection));
-  vec3 envColor = texture2D(uEnvMap, envUv).rgb * uEnvExposure;
+  vec3 envColor = textureCube(uEnvMap, normalize(worldDirection)).rgb * uEnvExposure;
   vec3 toneMapped = acesTonemap(envColor);
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }

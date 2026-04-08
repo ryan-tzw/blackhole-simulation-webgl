@@ -22,6 +22,15 @@ type PerspectiveDebugCanvasProps = {
   onCameraUpdate: (cameraState: ObserverCameraState) => void;
 };
 
+const DEBUG_ENV_CUBEMAP_FILES = [
+  "/assets/cubemap/right.png",
+  "/assets/cubemap/left.png",
+  "/assets/cubemap/top.png",
+  "/assets/cubemap/bottom.png",
+  "/assets/cubemap/front.png",
+  "/assets/cubemap/back.png",
+];
+
 export function PerspectiveDebugCanvas({
   className,
   onCameraUpdate,
@@ -59,10 +68,7 @@ export function PerspectiveDebugCanvas({
       />
       <axesHelper args={[2]} />
 
-      <Environment
-        files="/assets/env/kloppenheim_06_puresky_1k.hdr"
-        background
-      />
+      <Environment files={DEBUG_ENV_CUBEMAP_FILES} background />
 
       <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
     </Canvas>
