@@ -10,6 +10,7 @@ uniform float uAspect;
 uniform float uRs;
 uniform float uPhiStep;
 uniform float uEscapeRadius;
+uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
 uniform vec3 uMaxIterColor;
 
@@ -68,6 +69,7 @@ void main() {
 
   vec3 cameraPos = uCameraPos;
   float r0 = length(cameraPos);
+  float effectiveEscapeRadius = max(uEscapeRadius, uEscapeRadiusScale * r0);
   if (r0 <= uRs) {
     gl_FragColor = vec4(uCaptureColor, 1.0);
     return;
@@ -125,7 +127,7 @@ void main() {
       return;
     }
 
-    if (r >= uEscapeRadius) {
+    if (r >= effectiveEscapeRadius) {
       renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
       return;
     }
