@@ -55,7 +55,9 @@ vec3 bentRayDirection(
 }
 
 void renderEnv(vec3 worldDirection) {
-  vec3 envColor = textureCube(uEnvMap, normalize(worldDirection)).rgb * uEnvExposure;
+  vec3 cubeDirection = normalize(worldDirection);
+  cubeDirection.x *= -1.0;
+  vec3 envColor = textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
   vec3 toneMapped = acesTonemap(envColor);
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }

@@ -40,7 +40,9 @@ void main() {
     }
   }
 
-  vec3 envColor = textureCube(uEnvMap, normalize(rayDirection)).rgb * uEnvExposure;
+  vec3 cubeDirection = normalize(rayDirection);
+  cubeDirection.x *= -1.0;
+  vec3 envColor = textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
   vec3 toneMapped = acesTonemap(envColor);
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }
