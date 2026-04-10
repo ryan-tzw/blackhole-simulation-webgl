@@ -63,74 +63,126 @@ void renderEnv(vec3 worldDirection) {
 }
 
 void main() {
-  // Convert from NDC to world space ray direction
+  // Convert the 0-to-1 pixel coordinates (vUv) to -1 to 1 Normalized Device Coordinates (NDC)
   vec2 ndc = vUv * 2.0 - 1.0;
+
+  // NOTE: The black hole center is treated as the origin (0, 0, 0) of the world space
+  // Use FOV data to compute the 2D offset of the image/view plane in front of the camera
   float tanHalfFov = tan(uFovY * 0.5);
   vec2 rayPlane = vec2(ndc.x * uAspect * tanHalfFov, ndc.y * tanHalfFov);
-  vec3 rayDirection = normalize(
-    uCameraForward + rayPlane.x * uCameraRight + rayPlane.y * uCameraUp
-  );
 
-  vec3 cameraPos = uCameraPos;
-  float r0 = length(cameraPos);
+  // Shoot a ray from the camera towards the current pixel on the image/view plane
+  // Camera's forward, right, and up vectors tell us the orientation of the camera, which by extension tells us the orientation of the image/view plane
+  vec3 rayDirection = normalize(uCameraForward + rayPlane.x * uCameraRight + rayPlane.y * uCameraUp);
+
+  // We use r to denote the ray's distance from the black hole center
+  vec3 rayOrigin = uCameraPos; // the ray starts at the camera position
+  float r0 = length(rayOrigin); // initial distance of the ray from the black hole
+
+  // Define the escape radius for the rays (configurable)
   float effectiveEscapeRadius = max(uEscapeRadius, uEscapeRadiusScale * r0);
-  if (r0 <= uRs) {
+
+  // Ray already captured if it starts inside the blackhole Schwarzschild radius (uRs) i.e. event horizon
+  if(r0 <= uRs) {
     gl_FragColor = vec4(uCaptureColor, 1.0);
     return;
   }
 
-  vec3 eRadial0 = cameraPos / r0; // e means unit vector, so this = unit radial vector
-  float radialRate = dot(rayDirection, eRadial0); // radial component of ray velocity
+  // Unit radial vector (eRadial0) points from the black hole center to the ray origin (camera position)
+  // Note: we use 'e' to denote unit vectors, and the '0' to indicate initial values
+  vec3 eRadial0 = rayOrigin / r0;
+
+  // Calculate how much the ray is moving directly toward or away from the black hole
+  float radialRate = dot(rayDirection, eRadial0); // radial component of ray velocity (<0 means moving toward the black hole, >0 means moving away)
   vec3 tangent = rayDirection - radialRate * eRadial0; // tangent component of ray velocity
   float tangentLen = length(tangent);
 
-  // near-radial trajectory -> ray goes straight in or out so no need to solve ODE
-  if (tangentLen < EPS) {
-    if (radialRate < 0.0) {
+  // Edge case: If the ray is near radial (tangent component is very small), 
+  // it means that the ray is going almost directly toward or away from the black hole center,
+  // in which case we do not need to solve the geodesic ODE as there is negligible ray bending
+  if(tangentLen < EPS) {
+    if(radialRate < 0.0) { // Ray is moving directly towards the black hole and will be captured
       gl_FragColor = vec4(uCaptureColor, 1.0);
       return;
     }
 
+    // Else the ray moves directly away from the black hole, simply render the environment in that direction
     renderEnv(rayDirection);
     return;
   }
 
+  // Unit vector in the initial tangential direction of the ray (ePhi0) is the "orbital" direction
   vec3 ePhi0 = tangent / tangentLen;
 
-  // initial conditions for the ODE (lambda = path parameter)
+  /*
+  [2D Geodesic Solving in the Radial-Azimuthal Plane]
+  Gravity is a central force with the pull always toward the black hole center at (0, 0, 0).
+  Imagine the 2D plane that intersects the black hole center (origin)
+  where both the ray's initial direction and the radial direction (direction from black hole center to ray origin) lie.
+  The ray will only travel and bend within/along this plane and never leave it, because there is no force component to push it out of this plane.
+  Therefore, we can treat the ray's path as a 2D curve in this plane and solve for it using polar coordinates (r, phi),
+  where r is the distance from the black hole center and phi is the angle around the black hole center (we simply initialize the ray origin's position as phi = 0).
+  */
+
+  // Angular momentum is how much the ray "orbits" around the black hole
   float angularMomentum = r0 * tangentLen;
+
+  // For mathematical convenience, we solve the geodesic equation in terms of u = 1/r instead of r, and phi as the angular coordinate.
   float u = 1.0 / r0;
-  float uPrime = -(u * radialRate) / tangentLen; // du/dphi (scale-invariant form)
+
+  // uPrime is du/dphi, the rate of change of u (distance from black hole) with respect to phi (angular position around the black hole)
+  float uPrime = -(u * radialRate) / tangentLen; // scale-invariant form
+
+  // phi is the "angle of travel" around the black hole, set to 0 at the ray's initial position
   float phi = 0.0;
 
-  for (int i = 0; i < MAX_STEPS; i++) {
-    float phiStep = adaptivePhiStep(u, uPrime, uRs);
-    rk4StepSecondOrder(u, uPrime, phiStep, uRs);
+  /*
+  [Ray Marching]
+  We iteratively take steps along the ray's path by incrementing phi. 
+  Solving the geodesic ODE tells us how u (inverse distance from black hole) and uPrime (rate of change of that distance with respect to angle) change as we march along phi.
+  As we march along the ray's path, we check whether the ray gets captured by or escapes the black hole at any point.
+  */
+  for(int i = 0; i < MAX_STEPS; i++) {
+    // ODE is solved using RK4 with an adaptive phi step size
+    float phiStep = adaptivePhiStep(u, uPrime, uRs); // small when u or uPrime are changing rapidly and vice versa
+
+    // RK4 moves the ray forward
+    rk4StepSecondOrder(u, uPrime, phiStep, uRs); // updates u and uPrime (inout parameters)
+
+    // Update the total angle traveled around the black hole
     phi += phiStep;
 
-    if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
+    // Error check: if values explode, we paint an error color (uMaxIterColor)
+    if(abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
       gl_FragColor = vec4(uMaxIterColor, 1.0);
       return;
     }
 
-    // u <= 0 should be physically impossible (negative radius),
-    // but if it happens due to numerical issues we treat it as escape
-    if (u <= EPS) {
+    // u should always be positive (since it's defined as 1/r), 
+    // but if it becomes very small or negative due to numerical issues, 
+    // we treat the ray as having escaped (ray is very far away from the black hole)
+    if(u <= EPS) {
       renderEnv(bentRayDirection(max(u, EPS), uPrime, phi, angularMomentum, eRadial0, ePhi0));
       return;
     }
 
+    // Convert u back to r (distance from black hole) to check if the ray is captured or escaped
     float r = 1.0 / u;
-    if (r <= uRs) {
+
+    // If the ray gets too close i.e. within the Schwarzschild radius (uRs), it is captured by the black hole
+    if(r <= uRs) {
       gl_FragColor = vec4(uCaptureColor, 1.0);
       return;
     }
 
-    if (r >= effectiveEscapeRadius) {
+    // If distance is greater than the effective escape radius, the ray has escaped
+    if(r >= effectiveEscapeRadius) {
+      // Convert the final integrated state (u, uPrime, phi) back to a world-space ray direction to sample the environment map
       renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
       return;
     }
   }
 
+  // Ray marching loop ends; render some fallback color
   gl_FragColor = vec4(uMaxIterColor, 1.0);
 }
