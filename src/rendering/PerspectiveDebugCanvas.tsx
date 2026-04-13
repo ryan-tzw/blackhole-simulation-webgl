@@ -16,20 +16,12 @@ import {
   OBSERVER_CAMERA_DEFAULTS,
   type ObserverCameraState,
 } from "./camera-state";
+import { CUBEMAP_FACE_FILES } from "@/rendering/environment/cubemap";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
   onCameraUpdate: (cameraState: ObserverCameraState) => void;
 };
-
-const DEBUG_ENV_CUBEMAP_FILES = [
-  "/assets/cubemap/right.png",
-  "/assets/cubemap/left.png",
-  "/assets/cubemap/top.png",
-  "/assets/cubemap/bottom.png",
-  "/assets/cubemap/front.png",
-  "/assets/cubemap/back.png",
-];
 
 export function PerspectiveDebugCanvas({
   className,
@@ -68,7 +60,7 @@ export function PerspectiveDebugCanvas({
       />
       <axesHelper args={[2]} />
 
-      <Environment files={DEBUG_ENV_CUBEMAP_FILES} background />
+      <Environment files={[...CUBEMAP_FACE_FILES]} background />
 
       <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
     </Canvas>
