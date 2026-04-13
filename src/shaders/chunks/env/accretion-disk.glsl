@@ -2,11 +2,11 @@
 const float ADISK_INNER_RADIUS = 2.6;
 const float ADISK_OUTER_RADIUS = 12.0;
 const float ADISK_HEIGHT = 0.2;
-const float ADISK_LIT = 0.5; // Overall brightness multiplier
-const float ADISK_DENSITY_V = 1.0; // Vertical falloff (thinner at edges)
-const float ADISK_DENSITY_H = 1.0; // Horizontal falloff
+uniform float ADISK_LIT; // Overall brightness multiplier
+uniform float ADISK_DENSITY_V; // Vertical falloff (thinner at edges)
+uniform float ADISK_DENSITY_H; // Horizontal falloff
 const float ADISK_NOISE_SCALE = 1.0;
-const float ADISK_NOISE_LOD = 5.0; // How detailed the clouds are
+uniform float ADISK_NOISE_LOD; // How detailed the clouds are
 const float ADISK_SPEED = 0.5;
 
 // Fake time for testing

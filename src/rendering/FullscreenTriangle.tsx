@@ -12,6 +12,10 @@ import type { PassShaderMode } from "./pass-shader-mode";
 type FullscreenTriangleProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
   mode?: PassShaderMode;
+  adiskLit: number;
+  adiskDensityV: number;
+  adiskDensityH: number;
+  noiseLod: number;
 };
 
 type FullscreenPassMaterialInstance = InstanceType<
@@ -30,6 +34,10 @@ type FullscreenPassBendEnvMaterialInstance = InstanceType<
 export function FullscreenTriangle({
   observerCameraStateRef,
   mode = "debug",
+  adiskLit,
+  adiskDensityV,
+  adiskDensityH,
+  noiseLod,
 }: FullscreenTriangleProps) {
   const size = useThree((state) => state.size);
   const geometry = useMemo(() => {
@@ -115,6 +123,10 @@ export function FullscreenTriangle({
           key={FullscreenPassBendEnvMaterial.key}
           ref={bendEnvMaterialRef}
           side={DoubleSide}
+          ADISK_LIT={adiskLit}
+          ADISK_DENSITY_V={adiskDensityV}
+          ADISK_DENSITY_H={adiskDensityH}
+          ADISK_NOISE_LOD={noiseLod}
         />
       )}
     </mesh>

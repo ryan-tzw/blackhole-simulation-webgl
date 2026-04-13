@@ -35,7 +35,12 @@ export const FullscreenPassBendEnvMaterial = shaderMaterial(
     uEnvMap: envMapTexture,
     uEnvExposure: 1.0,
     uTime: 0.0,
+    ADISK_LIT: 0.5, // Overall brightness multiplier
+    ADISK_DENSITY_V: 1.0, // Vertical falloff (thinner at edges)
+    ADISK_DENSITY_H: 1.0, // Horizontal falloff
+    ADISK_NOISE_LOD: 5.0, // How detailed the clouds are
   },
+
   vertexShader,
   fragmentShader,
 );
