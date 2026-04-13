@@ -62,6 +62,16 @@ void renderEnv(vec3 worldDirection) {
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
 }
 
+void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
+  // todo: add straight-line medium accumulation here.
+  if (radialRate < 0.0) {
+    gl_FragColor = vec4(uCaptureColor, 1.0);
+    return;
+  }
+
+  renderEnv(rayDirection);
+}
+
 void main() {
   // Convert from NDC to world space ray direction
   vec2 ndc = vUv * 2.0 - 1.0;
@@ -86,12 +96,7 @@ void main() {
 
   // near-radial trajectory -> ray goes straight in or out so no need to solve ODE
   if (tangentLen < EPS) {
-    if (radialRate < 0.0) {
-      gl_FragColor = vec4(uCaptureColor, 1.0);
-      return;
-    }
-
-    renderEnv(rayDirection);
+    renderNearRadialFallback(rayDirection, radialRate);
     return;
   }
 
