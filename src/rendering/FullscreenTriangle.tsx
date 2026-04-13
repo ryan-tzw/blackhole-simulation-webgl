@@ -7,6 +7,7 @@ import { FullscreenPassBendEnvMaterial } from "./materials/FullscreenPassBendEnv
 import { FullscreenPassBendDebugMaterial } from "./materials/FullscreenPassBendDebugMaterial";
 import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./materials/FullscreenPassMarchMaterial";
+import type { ObserverCameraUniformDefaults } from "./materials/observer-camera-uniforms";
 import type { PassShaderMode } from "./pass-shader-mode";
 
 type FullscreenTriangleProps = {
@@ -56,16 +57,7 @@ export function FullscreenTriangle({
     const cameraState = observerCameraStateRef.current;
     const passAspect =
       size.height > 0 ? size.width / size.height : cameraState.aspect;
-    const updateMaterial = (
-      material: {
-        uCameraPos: { set: (...v: number[]) => unknown };
-        uCameraRight: { set: (...v: number[]) => unknown };
-        uCameraUp: { set: (...v: number[]) => unknown };
-        uCameraForward: { set: (...v: number[]) => unknown };
-        uFovY: number;
-        uAspect: number;
-      } | null,
-    ) => {
+    const updateMaterial = (material: ObserverCameraUniformDefaults | null) => {
       if (!material) {
         return;
       }
