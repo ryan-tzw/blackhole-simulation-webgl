@@ -27,6 +27,7 @@ const float LARGE_VALUE = 1e8;
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
 #include ./chunks/color/aces-tonemap.glsl;
+#include ./chunks/env/accretion-disk.glsl;
 
 // Converts integrated 2D geodesic state back to world-space ray direction
 vec3 bentRayDirection(
@@ -54,12 +55,16 @@ vec3 bentRayDirection(
   return normalize(dr_dlambda * eRadial + (r * dphi_dlambda) * ePhi);
 }
 
-void renderEnv(vec3 worldDirection) {
+// Returns the RGB color sampled from the environment map in the given ray direction
+vec3 sampleEnvColor(vec3 worldDirection) {
   vec3 cubeDirection = normalize(worldDirection);
   cubeDirection.x *= -1.0;
   vec3 envColor = textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
-  vec3 toneMapped = acesTonemap(envColor);
-  gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
+  return envColor;
+}
+
+void renderFragColor(vec3 finalColor) {
+  gl_FragColor = vec4(linearToSrgb(acesTonemap(finalColor)), 1.0);
 }
 
 void main() {
@@ -107,12 +112,10 @@ void main() {
     }
 
     // Else the ray moves directly away from the black hole, simply render the environment in that direction
-    renderEnv(rayDirection);
+    vec3 envColor = sampleEnvColor(rayDirection);
+    renderFragColor(envColor);
     return;
   }
-
-  // Unit vector in the initial tangential direction of the ray (ePhi0) is the "orbital" direction
-  vec3 ePhi0 = tangent / tangentLen;
 
   /*
   [2D Geodesic Solving in the Radial-Azimuthal Plane]
@@ -123,6 +126,9 @@ void main() {
   Therefore, we can treat the ray's path as a 2D curve in this plane and solve for it using polar coordinates (r, phi),
   where r is the distance from the black hole center and phi is the angle around the black hole center (we simply initialize the ray origin's position as phi = 0).
   */
+
+  // Unit vector in the initial tangential direction of the ray (ePhi0) is the "orbital" direction
+  vec3 ePhi0 = tangent / tangentLen;
 
   // Angular momentum is how much the ray "orbits" around the black hole
   float angularMomentum = r0 * tangentLen;
@@ -135,6 +141,12 @@ void main() {
 
   // phi is the "angle of travel" around the black hole, set to 0 at the ray's initial position
   float phi = 0.0;
+
+  // Track the glowing gas color (accretion disk) accumulated along the ray's path
+  vec3 accumulatedDiskColor = vec3(0.0); 
+
+  // Track the ray's last position to compute distance travelled for accurate glow accumulation
+  vec3 previousPos = rayOrigin;
 
   /*
   [Ray Marching]
@@ -152,9 +164,26 @@ void main() {
     // Update the total angle traveled around the black hole
     phi += phiStep;
 
+    // Convert u back to r (distance from black hole) for simpler checks
+    float r = 1.0 / u; 
+    // float r = 1.0 / max(abs(u), EPS); 
+
+    // Current position of the ray in world space
+    vec3 currentPos = r * (cos(phi) * eRadial0 + sin(phi) * ePhi0);
+
+    // Compute distance traveled by the ray since the last step for accurate glow accumulation
+    float stepDist = length(currentPos - previousPos);
+
+    // Sample accretion disk volume along this ray step and accumulate color contribution
+    accumulateDiskColor(currentPos, stepDist, accumulatedDiskColor); // updates accumulatedDiskColor (inout parameter)
+
+    // Update previous position for the next step
+    previousPos = currentPos;
+
     // Error check: if values explode, we paint an error color (uMaxIterColor)
     if(abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
-      gl_FragColor = vec4(uMaxIterColor, 1.0);
+      vec3 finalColor = accumulatedDiskColor + uMaxIterColor;
+      renderFragColor(finalColor);
       return;
     }
 
@@ -162,27 +191,31 @@ void main() {
     // but if it becomes very small or negative due to numerical issues, 
     // we treat the ray as having escaped (ray is very far away from the black hole)
     if(u <= EPS) {
-      renderEnv(bentRayDirection(max(u, EPS), uPrime, phi, angularMomentum, eRadial0, ePhi0));
+      vec3 finalRayDirection = bentRayDirection(max(u, EPS), uPrime, phi, angularMomentum, eRadial0, ePhi0);
+      vec3 envColor = sampleEnvColor(finalRayDirection);
+      vec3 finalColor = accumulatedDiskColor + envColor;
+      renderFragColor(finalColor);
       return;
     }
 
-    // Convert u back to r (distance from black hole) to check if the ray is captured or escaped
-    float r = 1.0 / u;
-
     // If the ray gets too close i.e. within the Schwarzschild radius (uRs), it is captured by the black hole
     if(r <= uRs) {
-      gl_FragColor = vec4(uCaptureColor, 1.0);
+      vec3 finalColor = accumulatedDiskColor + uCaptureColor;
+      renderFragColor(finalColor);
       return;
     }
 
     // If distance is greater than the effective escape radius, the ray has escaped
     if(r >= effectiveEscapeRadius) {
       // Convert the final integrated state (u, uPrime, phi) back to a world-space ray direction to sample the environment map
-      renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
+      vec3 finalRayDirection = bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0);
+      vec3 envColor = sampleEnvColor(finalRayDirection);
+      vec3 finalColor = accumulatedDiskColor + envColor;
+      renderFragColor(finalColor);
       return;
     }
   }
 
   // Ray marching loop ends; render some fallback color
-  gl_FragColor = vec4(uMaxIterColor, 1.0);
+  renderFragColor(uMaxIterColor + accumulatedDiskColor);
 }
