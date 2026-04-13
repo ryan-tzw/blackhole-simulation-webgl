@@ -34,6 +34,7 @@ export const FullscreenPassBendEnvMaterial = shaderMaterial(
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
     uEnvMap: envMapTexture,
     uEnvExposure: 1.0,
+    uTime: 0.0,
   },
   vertexShader,
   fragmentShader,

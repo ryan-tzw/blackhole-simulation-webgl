@@ -52,7 +52,7 @@ export function FullscreenTriangle({
   const bendEnvMaterialRef =
     useRef<FullscreenPassBendEnvMaterialInstance | null>(null);
 
-  useFrame(() => {
+  useFrame((state) => {
     const cameraState = observerCameraStateRef.current;
     const passAspect =
       size.height > 0 ? size.width / size.height : cameraState.aspect;
@@ -82,6 +82,12 @@ export function FullscreenTriangle({
     updateMaterial(marchMaterialRef.current);
     updateMaterial(bendDebugMaterialRef.current);
     updateMaterial(bendEnvMaterialRef.current);
+
+    // Update uTime (simulation time) for bend enviornment material to animate the accretion disk
+    if (bendEnvMaterialRef.current) {
+      // state.clock.elapsedTime provides the seconds since the app started
+      bendEnvMaterialRef.current.uTime = state.clock.elapsedTime;
+    }
   });
 
   return (

@@ -10,7 +10,7 @@ const float ADISK_NOISE_LOD = 5.0; // How detailed the clouds are
 const float ADISK_SPEED = 0.5;
 
 // Fake time for testing
-const float TEST_TIME = 0.0;
+uniform float uTime;
 
 // Simplex 3D Noise by Ian McEwan, Ashima Arts
 vec4 permute(vec4 x) {
@@ -135,9 +135,9 @@ void accumulateDiskColor(vec3 pos, float stepDist, inout vec3 accumulatedColor) 
     noise *= 0.5 * snoise(sphericalCoord * pow(float(i), 2.0) * ADISK_NOISE_SCALE) + 0.5;
     // Alternate rotation direction for different noise layers
     if(i % 2 == 0)
-      sphericalCoord.y += TEST_TIME * ADISK_SPEED;
+      sphericalCoord.y += uTime * ADISK_SPEED;
     else
-      sphericalCoord.y -= TEST_TIME * ADISK_SPEED;
+      sphericalCoord.y -= uTime * ADISK_SPEED;
   }
 
   // 5. Get procedural color based on distance from center
