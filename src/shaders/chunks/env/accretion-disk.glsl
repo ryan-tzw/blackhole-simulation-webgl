@@ -93,7 +93,8 @@ vec3 toSpherical(vec3 p) {
   float rho = length(p);
   float theta = atan(p.z, p.x);
   float phi = asin(p.y / rho);
-  return vec3(rho, theta, phi);
+  // Use sin/cos so the angle wraps smoothly instead of jumping at +/- pi
+  return vec3(rho, cos(theta), sin(theta) + phi);
 }
 
 // Procedural colour map
