@@ -18,7 +18,7 @@ uniform vec3 uCaptureColor;
 uniform vec3 uEscapeColor;
 uniform vec3 uMaxIterColor;
 
-const int MAX_STEPS = 2048;
+const int MAX_STEPS = 512;
 const float EPS = 1e-6;
 const float LARGE_VALUE = 1e8;
 
