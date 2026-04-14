@@ -12,6 +12,7 @@ type FullscreenPassCanvasProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
   bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
+  showPerf?: boolean;
 };
 
 export function FullscreenPassCanvas({
@@ -19,6 +20,7 @@ export function FullscreenPassCanvas({
   observerCameraStateRef,
   bendSettings,
   mode = "march",
+  showPerf = true,
 }: FullscreenPassCanvasProps) {
   return (
     <Canvas
@@ -34,7 +36,7 @@ export function FullscreenPassCanvas({
         far: 100,
       }}
     >
-      <Perf position="bottom-left" />
+      {showPerf ? <Perf position="bottom-left" /> : null}
       <FullscreenTriangle
         bendSettings={bendSettings}
         observerCameraStateRef={observerCameraStateRef}

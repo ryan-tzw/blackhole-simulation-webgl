@@ -27,6 +27,7 @@ export function RenderingRoot() {
   const {
     passMode,
     showDebugView,
+    showPerf,
     uRs,
     uPhiStepMin,
     uPhiStepMax,
@@ -37,6 +38,9 @@ export function RenderingRoot() {
       options: PASS_SHADER_MODES,
     },
     showDebugView: {
+      value: true,
+    },
+    showPerf: {
       value: true,
     },
     Bending: folder({
@@ -82,6 +86,7 @@ export function RenderingRoot() {
         className="main-pass-canvas"
         observerCameraStateRef={observerCameraStateRef}
         mode={passMode}
+        showPerf={showPerf}
       />
       <div
         className={`debug-inset${showDebugView ? "" : " debug-inset-hidden"}`}
