@@ -24,43 +24,50 @@ export function RenderingRoot() {
     observerCameraStateRef.current = cameraState;
   }, []);
 
-  const { passMode, uRs, uPhiStepMin, uPhiStepMax, uEnvExposure } = useControls(
-    "Render",
-    {
-      passMode: {
-        value: "bend-env" as PassShaderMode,
-        options: PASS_SHADER_MODES,
-      },
-      Bending: folder({
-        uRs: {
-          value: DEFAULT_BEND_RENDER_SETTINGS.uRs,
-          min: 0.1,
-          max: 4.0,
-          step: 0.05,
-        },
-        uPhiStepMin: {
-          value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMin,
-          min: 0.0005,
-          max: 0.05,
-          step: 0.0005,
-        },
-        uPhiStepMax: {
-          value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMax,
-          min: 0.005,
-          max: 0.5,
-          step: 0.005,
-        },
-      }),
-      Environment: folder({
-        uEnvExposure: {
-          value: DEFAULT_BEND_RENDER_SETTINGS.uEnvExposure,
-          min: 0.0,
-          max: 4.0,
-          step: 0.05,
-        },
-      }),
+  const {
+    passMode,
+    showDebugView,
+    uRs,
+    uPhiStepMin,
+    uPhiStepMax,
+    uEnvExposure,
+  } = useControls("Render", {
+    passMode: {
+      value: "bend-env" as PassShaderMode,
+      options: PASS_SHADER_MODES,
     },
-  );
+    showDebugView: {
+      value: true,
+    },
+    Bending: folder({
+      uRs: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uRs,
+        min: 0.1,
+        max: 4.0,
+        step: 0.05,
+      },
+      uPhiStepMin: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMin,
+        min: 0.0005,
+        max: 0.05,
+        step: 0.0005,
+      },
+      uPhiStepMax: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMax,
+        min: 0.005,
+        max: 0.5,
+        step: 0.005,
+      },
+    }),
+    Environment: folder({
+      uEnvExposure: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uEnvExposure,
+        min: 0.0,
+        max: 4.0,
+        step: 0.05,
+      },
+    }),
+  });
   const bendSettings: BendRenderSettings = {
     uRs,
     uPhiStepMin,
@@ -76,7 +83,9 @@ export function RenderingRoot() {
         observerCameraStateRef={observerCameraStateRef}
         mode={passMode}
       />
-      <div className="debug-inset">
+      <div
+        className={`debug-inset${showDebugView ? "" : " debug-inset-hidden"}`}
+      >
         <PerspectiveDebugCanvas
           className="debug-inset-canvas"
           onCameraUpdate={handleCameraUpdate}
