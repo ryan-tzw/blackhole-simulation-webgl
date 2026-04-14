@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import type { ObserverCameraState } from "./camera-state";
+import type { BendRenderSettings } from "./bend-render-settings";
 import { FullscreenTriangle } from "./FullscreenTriangle";
 import type { PassShaderMode } from "./pass-shader-mode";
 import { FXAAPostProcess } from "./postprocessing/FXAAPostProcess";
@@ -9,12 +10,14 @@ import { Perf } from "r3f-perf";
 type FullscreenPassCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
 };
 
 export function FullscreenPassCanvas({
   className,
   observerCameraStateRef,
+  bendSettings,
   mode = "march",
 }: FullscreenPassCanvasProps) {
   return (
@@ -33,6 +36,7 @@ export function FullscreenPassCanvas({
     >
       <Perf position="bottom-left" />
       <FullscreenTriangle
+        bendSettings={bendSettings}
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
       />

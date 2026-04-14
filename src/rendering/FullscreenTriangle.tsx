@@ -2,15 +2,18 @@ import type { RefObject } from "react";
 import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
+import type { BendRenderSettings } from "./bend-render-settings";
 import type { ObserverCameraState } from "./camera-state";
 import { FullscreenPassBendEnvMaterial } from "./materials/FullscreenPassBendEnvMaterial";
 import { FullscreenPassBendDebugMaterial } from "./materials/FullscreenPassBendDebugMaterial";
 import { FullscreenPassMaterial } from "./materials/FullscreenPassMaterial";
 import { FullscreenPassMarchMaterial } from "./materials/FullscreenPassMarchMaterial";
+import type { BendUniformDefaults } from "./materials/bend-uniforms";
 import type { ObserverCameraUniformDefaults } from "./materials/observer-camera-uniforms";
 import type { PassShaderMode } from "./pass-shader-mode";
 
 type FullscreenTriangleProps = {
+  bendSettings: BendRenderSettings;
   observerCameraStateRef: RefObject<ObserverCameraState>;
   mode?: PassShaderMode;
 };
@@ -27,8 +30,13 @@ type FullscreenPassBendDebugMaterialInstance = InstanceType<
 type FullscreenPassBendEnvMaterialInstance = InstanceType<
   typeof FullscreenPassBendEnvMaterial
 >;
+type BendMaterialUniforms = ObserverCameraUniformDefaults & BendUniformDefaults;
+type BendEnvMaterialUniforms = BendMaterialUniforms & {
+  uEnvExposure: number;
+};
 
 export function FullscreenTriangle({
+  bendSettings,
   observerCameraStateRef,
   mode = "debug",
 }: FullscreenTriangleProps) {
@@ -57,6 +65,7 @@ export function FullscreenTriangle({
     const cameraState = observerCameraStateRef.current;
     const passAspect =
       size.height > 0 ? size.width / size.height : cameraState.aspect;
+
     const updateMaterial = (material: ObserverCameraUniformDefaults | null) => {
       if (!material) {
         return;
@@ -69,11 +78,28 @@ export function FullscreenTriangle({
       material.uFovY = cameraState.fovYRadians;
       material.uAspect = passAspect;
     };
+    const updateBendMaterial = (material: BendMaterialUniforms | null) => {
+      if (!material) {
+        return;
+      }
+
+      updateMaterial(material);
+      material.uRs = bendSettings.uRs;
+      material.uPhiStepMin = bendSettings.uPhiStepMin;
+      material.uPhiStepMax = bendSettings.uPhiStepMax;
+    };
 
     updateMaterial(debugMaterialRef.current);
     updateMaterial(marchMaterialRef.current);
-    updateMaterial(bendDebugMaterialRef.current);
-    updateMaterial(bendEnvMaterialRef.current);
+    updateBendMaterial(bendDebugMaterialRef.current);
+    updateBendMaterial(bendEnvMaterialRef.current);
+
+    const bendEnvMaterial =
+      bendEnvMaterialRef.current as BendEnvMaterialUniforms | null;
+
+    if (bendEnvMaterial) {
+      bendEnvMaterial.uEnvExposure = bendSettings.uEnvExposure;
+    }
   });
 
   return (
