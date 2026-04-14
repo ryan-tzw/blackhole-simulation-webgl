@@ -31,6 +31,7 @@ export function RenderingRoot() {
     uRs,
     uPhiStepMin,
     uPhiStepMax,
+    uMaxSteps,
     uEnvExposure,
   } = useControls("Render", {
     passMode: {
@@ -62,6 +63,12 @@ export function RenderingRoot() {
         max: 0.5,
         step: 0.005,
       },
+      uMaxSteps: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uMaxSteps,
+        min: 16,
+        max: 1024,
+        step: 1,
+      },
     }),
     Environment: folder({
       uEnvExposure: {
@@ -76,6 +83,7 @@ export function RenderingRoot() {
     uRs,
     uPhiStepMin,
     uPhiStepMax,
+    uMaxSteps,
     uEnvExposure,
   };
 

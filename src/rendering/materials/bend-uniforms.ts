@@ -4,6 +4,7 @@ export type BendUniformDefaults = {
   uRs: number;
   uPhiStepMin: number;
   uPhiStepMax: number;
+  uMaxSteps: number;
   uMaxRelUChange: number;
   uMaxAbsUPrimeChange: number;
   uEscapeRadius: number;
@@ -18,6 +19,7 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uRs: 1.0,
     uPhiStepMin: 0.005,
     uPhiStepMax: 0.5,
+    uMaxSteps: 512.0,
     uMaxRelUChange: 0.01,
     uMaxAbsUPrimeChange: 0.01,
     uEscapeRadius: 100.0,

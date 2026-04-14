@@ -10,6 +10,7 @@ uniform float uAspect;
 uniform float uRs;
 uniform float uPhiStepMin;
 uniform float uPhiStepMax;
+uniform float uMaxSteps;
 uniform float uMaxRelUChange;
 uniform float uMaxAbsUPrimeChange;
 uniform float uEscapeRadius;
@@ -20,7 +21,7 @@ uniform vec3 uMaxIterColor;
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;
 
-const int MAX_STEPS = 512;
+const int MAX_STEPS = 1024;
 const float EPS = 1e-6;
 const float LARGE_VALUE = 1e8;
 
@@ -109,6 +110,10 @@ void main() {
   float phi = 0.0;
 
   for (int i = 0; i < MAX_STEPS; i++) {
+    if (float(i) >= uMaxSteps) {
+      break;
+    }
+
     float phiStep = adaptivePhiStep(u, uPrime, uRs);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
