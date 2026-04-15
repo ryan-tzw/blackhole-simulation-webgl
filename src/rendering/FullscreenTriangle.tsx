@@ -100,6 +100,10 @@ export function FullscreenTriangle({
       material.uDiscAbsorption = bendSettings.uDiscAbsorption;
       material.uDiscEmissionStrength = bendSettings.uDiscEmissionStrength;
       material.uDiscEmissionColor.set(...bendSettings.uDiscEmissionColor);
+      material.uDiscInnerSoftness = bendSettings.uDiscInnerSoftness;
+      material.uDiscOuterSoftness = bendSettings.uDiscOuterSoftness;
+      material.uDiscVerticalFalloffPower =
+        bendSettings.uDiscVerticalFalloffPower;
     };
 
     updateMaterial(debugMaterialRef.current);

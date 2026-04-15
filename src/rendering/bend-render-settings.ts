@@ -16,6 +16,9 @@ export type BendRenderSettings = {
   uDiscAbsorption: number;
   uDiscEmissionStrength: number;
   uDiscEmissionColor: [number, number, number];
+  uDiscInnerSoftness: number;
+  uDiscOuterSoftness: number;
+  uDiscVerticalFalloffPower: number;
   uEnvExposure: number;
 };
 
@@ -42,6 +45,9 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
       bendDefaults.uDiscEmissionColor.y,
       bendDefaults.uDiscEmissionColor.z,
     ],
+    uDiscInnerSoftness: bendDefaults.uDiscInnerSoftness,
+    uDiscOuterSoftness: bendDefaults.uDiscOuterSoftness,
+    uDiscVerticalFalloffPower: bendDefaults.uDiscVerticalFalloffPower,
     uEnvExposure: 1.0,
   };
 }
