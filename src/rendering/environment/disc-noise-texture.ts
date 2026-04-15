@@ -83,13 +83,15 @@ function tileableValueNoise3D(
 function generateDiscNoiseData3D(size: number): Uint8Array {
   const voxelCount = size * size * size;
   const data = new Uint8Array(voxelCount);
+  const invExtent = size > 1 ? 1 / (size - 1) : 0;
 
   for (let z = 0; z < size; z += 1) {
     for (let y = 0; y < size; y += 1) {
       for (let x = 0; x < size; x += 1) {
-        const u = x / size;
-        const v = y / size;
-        const w = z / size;
+        // Sample inclusive endpoints so opposite texture faces are identical.
+        const u = x * invExtent;
+        const v = y * invExtent;
+        const w = z * invExtent;
 
         let amplitude = 1.0;
         let amplitudeSum = 0.0;
