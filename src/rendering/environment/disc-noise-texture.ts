@@ -6,8 +6,8 @@ import {
   UnsignedByteType,
 } from "three";
 
-const DISC_NOISE_SIZE = 64;
-const BASE_PERIOD = 8;
+const DISC_NOISE_SIZE = 128;
+const BASE_PERIOD = 16;
 const OCTAVES = 4;
 const PERSISTENCE = 0.5;
 

@@ -21,7 +21,7 @@ export type ObserverCameraDefaults = {
 
 // OSOT: canonical observer camera defaults for rendering + debug camera setup.
 export const OBSERVER_CAMERA_DEFAULTS: ObserverCameraDefaults = {
-  position: [4, 3, 4],
+  position: [13, 6, 13],
   target: [0, 0, 0],
   fovDegrees: 60,
   near: 0.1,
