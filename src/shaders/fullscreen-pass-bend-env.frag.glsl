@@ -21,6 +21,8 @@ uniform float uEnvExposure;
 const int MAX_STEPS = 1024;
 const float EPS = 1e-6;
 const float LARGE_VALUE = 1e8;
+const float RADIAL_BLEND_IN = 0.002;
+const float RADIAL_BLEND_OUT = 0.02;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
@@ -92,18 +94,20 @@ void main() {
   vec3 tangent = rayDirection - radialRate * eRadial0; // tangent component of ray velocity
   float tangentLen = length(tangent);
 
-  // near-radial trajectory -> ray goes straight in or out so no need to solve ODE
-  if (tangentLen < EPS) {
+  // near-radial trajectory fallback for the singular limit.
+  if (tangentLen < RADIAL_BLEND_IN) {
     renderNearRadialFallback(rayDirection, radialRate);
     return;
   }
 
+  float radialBlend = smoothstep(RADIAL_BLEND_IN, RADIAL_BLEND_OUT, tangentLen);
+  float tangentLenSafe = mix(RADIAL_BLEND_IN, tangentLen, radialBlend);
   vec3 ePhi0 = tangent / tangentLen;
 
   // initial conditions for the ODE (lambda = path parameter)
   float angularMomentum = r0 * tangentLen;
   float u = 1.0 / r0;
-  float uPrime = -(u * radialRate) / tangentLen; // du/dphi (scale-invariant form)
+  float uPrime = -(u * radialRate) / tangentLenSafe; // du/dphi (scale-invariant form)
   float phi = 0.0;
 
   for (int i = 0; i < MAX_STEPS; i++) {
@@ -111,7 +115,7 @@ void main() {
       break;
     }
 
-    float phiStep = adaptivePhiStep(u, uPrime);
+    float phiStep = adaptivePhiStep(u, uPrime, radialRate);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
 
