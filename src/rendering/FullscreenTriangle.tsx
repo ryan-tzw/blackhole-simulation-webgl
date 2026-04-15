@@ -89,6 +89,13 @@ export function FullscreenTriangle({
       material.uStepAdapt = bendSettings.uStepAdapt;
       material.uUseDebugColorOnTerminate =
         bendSettings.uUseDebugColorOnTerminate;
+      material.uDiscInnerRadius = bendSettings.uDiscInnerRadius;
+      material.uDiscOuterRadius = bendSettings.uDiscOuterRadius;
+      material.uDiscHalfHeight = bendSettings.uDiscHalfHeight;
+      material.uDiscDensity = bendSettings.uDiscDensity;
+      material.uDiscAbsorption = bendSettings.uDiscAbsorption;
+      material.uDiscEmissionStrength = bendSettings.uDiscEmissionStrength;
+      material.uDiscEmissionColor.set(...bendSettings.uDiscEmissionColor);
     };
 
     updateMaterial(debugMaterialRef.current);

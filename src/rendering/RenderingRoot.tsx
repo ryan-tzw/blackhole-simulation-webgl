@@ -29,6 +29,15 @@ export function RenderingRoot() {
     uMaxSteps,
     uStepAdapt,
     uUseDebugColorOnTerminate,
+    uDiscInnerRadius,
+    uDiscOuterRadius,
+    uDiscHalfHeight,
+    uDiscDensity,
+    uDiscAbsorption,
+    uDiscEmissionStrength,
+    uDiscEmissionColorR,
+    uDiscEmissionColorG,
+    uDiscEmissionColorB,
     uEnvExposure,
   } = useControls("Render", {
     passMode: {
@@ -64,6 +73,62 @@ export function RenderingRoot() {
         value: DEFAULT_BEND_RENDER_SETTINGS.uUseDebugColorOnTerminate >= 0.5,
       },
     }),
+    AccretionDisc: folder({
+      uDiscInnerRadius: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerRadius,
+        min: 0.0,
+        max: 20.0,
+        step: 0.1,
+      },
+      uDiscOuterRadius: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscOuterRadius,
+        min: 0.5,
+        max: 40.0,
+        step: 0.1,
+      },
+      uDiscHalfHeight: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscHalfHeight,
+        min: 0.01,
+        max: 2.0,
+        step: 0.01,
+      },
+      uDiscDensity: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensity,
+        min: 0.0,
+        max: 5.0,
+        step: 0.05,
+      },
+      uDiscAbsorption: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscAbsorption,
+        min: 0.0,
+        max: 5.0,
+        step: 0.05,
+      },
+      uDiscEmissionStrength: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionStrength,
+        min: 0.0,
+        max: 8.0,
+        step: 0.05,
+      },
+      uDiscEmissionColorR: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[0],
+        min: 0.0,
+        max: 5.0,
+        step: 0.05,
+      },
+      uDiscEmissionColorG: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[1],
+        min: 0.0,
+        max: 5.0,
+        step: 0.05,
+      },
+      uDiscEmissionColorB: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[2],
+        min: 0.0,
+        max: 5.0,
+        step: 0.05,
+      },
+    }),
     Environment: folder({
       uEnvExposure: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uEnvExposure,
@@ -78,6 +143,17 @@ export function RenderingRoot() {
     uMaxSteps,
     uStepAdapt,
     uUseDebugColorOnTerminate: uUseDebugColorOnTerminate ? 1.0 : 0.0,
+    uDiscInnerRadius,
+    uDiscOuterRadius,
+    uDiscHalfHeight,
+    uDiscDensity,
+    uDiscAbsorption,
+    uDiscEmissionStrength,
+    uDiscEmissionColor: [
+      uDiscEmissionColorR,
+      uDiscEmissionColorG,
+      uDiscEmissionColorB,
+    ],
     uEnvExposure,
   };
 

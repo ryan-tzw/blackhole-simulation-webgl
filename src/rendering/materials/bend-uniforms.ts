@@ -7,6 +7,13 @@ export type BendUniformDefaults = {
   uUseDebugColorOnTerminate: number;
   uEscapeRadius: number;
   uEscapeRadiusScale: number;
+  uDiscInnerRadius: number;
+  uDiscOuterRadius: number;
+  uDiscHalfHeight: number;
+  uDiscDensity: number;
+  uDiscAbsorption: number;
+  uDiscEmissionStrength: number;
+  uDiscEmissionColor: Vector3;
   uCaptureColor: Vector3;
   uMaxIterColor: Vector3;
 };
@@ -20,6 +27,13 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uUseDebugColorOnTerminate: 1.0,
     uEscapeRadius: 50.0,
     uEscapeRadiusScale: 1.5,
+    uDiscInnerRadius: 3.0,
+    uDiscOuterRadius: 12.0,
+    uDiscHalfHeight: 0.15,
+    uDiscDensity: 1.0,
+    uDiscAbsorption: 1.2,
+    uDiscEmissionStrength: 1.4,
+    uDiscEmissionColor: new Vector3(2.6, 1.15, 0.35),
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
   };

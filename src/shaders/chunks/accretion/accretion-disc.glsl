@@ -1,14 +1,5 @@
 const float ACCRETION_EPS = 1e-6;
 
-// Stage 1 internal disc defaults (uniform finite cylinder centered at origin).
-const float DISC_INNER_RADIUS = 3.0;
-const float DISC_OUTER_RADIUS = 12.0;
-const float DISC_HALF_HEIGHT = 0.15;
-const float DISC_DENSITY = 1.0;
-const float DISC_ABSORPTION = 1.2;
-const float DISC_EMISSION_STRENGTH = 1.4;
-const vec3 DISC_EMISSION_COLOR = vec3(2.6, 1.15, 0.35);
-
 // returns how much of the ray segment from p0 to p1 lies inside
 // an infinite cylinder of given radius, between tMin and tMax.
 float cylinderInsideSpan(
@@ -47,7 +38,8 @@ float cylinderInsideSpan(
 }
 
 // Returns world-space segment length that lies inside the disc volume.
-// Volume = intersection of slab |y| <= DISC_HALF_HEIGHT and annulus DISC_INNER_RADIUS <= sqrt(x^2+z^2) <= DISC_OUTER_RADIUS.
+// Volume = intersection of slab |y| <= uDiscHalfHeight and annulus
+// uDiscInnerRadius <= sqrt(x^2+z^2) <= uDiscOuterRadius.
 float discSegmentLength(vec3 p0, vec3 p1) {
   vec3 d = p1 - p0;
   float segmentLength = length(d);
@@ -60,12 +52,12 @@ float discSegmentLength(vec3 p0, vec3 p1) {
 
   // Clip against slab.
   if (abs(d.y) < ACCRETION_EPS) {
-    if (abs(p0.y) > DISC_HALF_HEIGHT) {
+    if (abs(p0.y) > uDiscHalfHeight) {
       return 0.0;
     }
   } else {
-    float slabT0 = (-DISC_HALF_HEIGHT - p0.y) / d.y;
-    float slabT1 = (DISC_HALF_HEIGHT - p0.y) / d.y;
+    float slabT0 = (-uDiscHalfHeight - p0.y) / d.y;
+    float slabT1 = (uDiscHalfHeight - p0.y) / d.y;
     float slabEnter = min(slabT0, slabT1);
     float slabExit = max(slabT0, slabT1);
     tEnter = max(tEnter, slabEnter);
@@ -76,8 +68,9 @@ float discSegmentLength(vec3 p0, vec3 p1) {
   }
 
   // Clip against annulus and return length of remaining segment
-  float innerRadius = min(DISC_INNER_RADIUS, DISC_OUTER_RADIUS - ACCRETION_EPS);
-  float outerSpan = cylinderInsideSpan(p0, d, DISC_OUTER_RADIUS, tEnter, tExit);
+  float outerRadius = max(uDiscOuterRadius, ACCRETION_EPS);
+  float innerRadius = clamp(uDiscInnerRadius, 0.0, outerRadius - ACCRETION_EPS);
+  float outerSpan = cylinderInsideSpan(p0, d, outerRadius, tEnter, tExit);
   float innerSpan = cylinderInsideSpan(p0, d, innerRadius, tEnter, tExit);
   float annulusSpan = max(outerSpan - innerSpan, 0.0);
   return segmentLength * annulusSpan;
@@ -92,8 +85,8 @@ void accumulateBeerLambert(
     return;
   }
 
-  float sigmaA = DISC_DENSITY * DISC_ABSORPTION; // extinction/absorption coefficient
-  vec3 sigmaEColor = DISC_DENSITY * DISC_EMISSION_STRENGTH * DISC_EMISSION_COLOR; // emission coefficient
+  float sigmaA = uDiscDensity * uDiscAbsorption; // extinction/absorption coefficient
+  vec3 sigmaEColor = uDiscDensity * uDiscEmissionStrength * uDiscEmissionColor; // emission coefficient
 
   // Beer-Lambert extinction and segment-integrated emission.
   float stepTransmittance = exp(-sigmaA * dsInside);

@@ -15,6 +15,13 @@ uniform float uEscapeRadius;
 uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
 uniform vec3 uMaxIterColor;
+uniform float uDiscInnerRadius;
+uniform float uDiscOuterRadius;
+uniform float uDiscHalfHeight;
+uniform float uDiscDensity;
+uniform float uDiscAbsorption;
+uniform float uDiscEmissionStrength;
+uniform vec3 uDiscEmissionColor;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;
