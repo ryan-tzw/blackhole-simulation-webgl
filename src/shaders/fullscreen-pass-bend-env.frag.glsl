@@ -30,6 +30,9 @@ uniform float uDiscInnerSoftness;
 uniform float uDiscOuterSoftness;
 uniform float uDiscVerticalFalloffPower;
 uniform float uDiscIntegrationQuality;
+uniform sampler3D uDiscNoiseTex;
+uniform float uDiscNoiseScale;
+uniform float uDiscNoiseStrength;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;

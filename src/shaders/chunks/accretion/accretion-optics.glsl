@@ -49,7 +49,12 @@ float averageDiscDensityFactorOnSpan(
     }
     float u = (float(i) + 0.5) * invSamples;
     float t = t0 + u * dt;
-    densitySum += discDensityFactor(mix(p0, p1, t));
+    vec3 p = mix(p0, p1, t);
+    float baseDensity = discDensityFactor(p);
+    vec3 noiseUv = fract(p * uDiscNoiseScale);
+    float noiseValue = texture(uDiscNoiseTex, noiseUv).r;
+    float noiseMod = mix(1.0, noiseValue, uDiscNoiseStrength);
+    densitySum += baseDensity * noiseMod;
   }
 
   return densitySum * invSamples;

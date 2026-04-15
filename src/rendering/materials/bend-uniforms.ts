@@ -24,6 +24,8 @@ export type BendUniformDefaults = {
   uDiscVerticalFalloffPower: number;
   uDiscIntegrationQuality: number;
   uDiscNoiseTex: Data3DTexture;
+  uDiscNoiseScale: number;
+  uDiscNoiseStrength: number;
   uCaptureColor: Vector3;
   uMaxIterColor: Vector3;
 };
@@ -55,6 +57,8 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscVerticalFalloffPower: 1.5,
     uDiscIntegrationQuality: 2.0,
     uDiscNoiseTex: getSharedDiscNoiseTexture(),
+    uDiscNoiseScale: 0.2,
+    uDiscNoiseStrength: 0.35,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
   };

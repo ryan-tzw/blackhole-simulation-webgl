@@ -105,6 +105,8 @@ export function FullscreenTriangle({
       material.uDiscVerticalFalloffPower =
         bendSettings.uDiscVerticalFalloffPower;
       material.uDiscIntegrationQuality = bendSettings.uDiscIntegrationQuality;
+      material.uDiscNoiseScale = bendSettings.uDiscNoiseScale;
+      material.uDiscNoiseStrength = bendSettings.uDiscNoiseStrength;
     };
 
     updateMaterial(debugMaterialRef.current);

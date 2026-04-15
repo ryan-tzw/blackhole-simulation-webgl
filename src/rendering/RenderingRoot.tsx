@@ -43,6 +43,8 @@ export function RenderingRoot() {
     uDiscOuterSoftness,
     uDiscVerticalFalloffPower,
     uDiscIntegrationQuality,
+    uDiscNoiseScale,
+    uDiscNoiseStrength,
     uDiscEmissionColorR,
     uDiscEmissionColorG,
     uDiscEmissionColorB,
@@ -165,6 +167,18 @@ export function RenderingRoot() {
         max: 3,
         step: 1,
       },
+      uDiscNoiseScale: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseScale,
+        min: 0.01,
+        max: 0.2,
+        step: 0.001,
+      },
+      uDiscNoiseStrength: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseStrength,
+        min: 0.0,
+        max: 2.0,
+        step: 0.01,
+      },
       uDiscEmissionColorR: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[0],
         min: 0.0,
@@ -212,6 +226,8 @@ export function RenderingRoot() {
     uDiscOuterSoftness,
     uDiscVerticalFalloffPower,
     uDiscIntegrationQuality,
+    uDiscNoiseScale,
+    uDiscNoiseStrength,
     uDiscEmissionColor: [
       uDiscEmissionColorR,
       uDiscEmissionColorG,
