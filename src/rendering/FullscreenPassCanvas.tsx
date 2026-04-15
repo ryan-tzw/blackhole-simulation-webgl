@@ -7,6 +7,7 @@ import { ObserverCameraController } from "./ObserverCameraController";
 import type { PassShaderMode } from "./pass-shader-mode";
 import { FXAAPostProcess } from "./postprocessing/FXAAPostProcess";
 import { Perf } from "r3f-perf";
+import { FirstFrameSignal } from "./FirstFrameSignal";
 
 type FullscreenPassCanvasProps = {
   className?: string;
@@ -14,6 +15,7 @@ type FullscreenPassCanvasProps = {
   bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
   showPerf?: boolean;
+  onFirstFrame?: () => void;
 };
 
 export function FullscreenPassCanvas({
@@ -22,6 +24,7 @@ export function FullscreenPassCanvas({
   bendSettings,
   mode = "march",
   showPerf = true,
+  onFirstFrame,
 }: FullscreenPassCanvasProps) {
   return (
     <Canvas
@@ -47,6 +50,7 @@ export function FullscreenPassCanvas({
         mode={mode}
       />
       <FXAAPostProcess />
+      <FirstFrameSignal onFirstFrame={onFirstFrame} />
     </Canvas>
   );
 }

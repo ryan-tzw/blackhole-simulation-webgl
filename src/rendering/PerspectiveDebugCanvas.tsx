@@ -11,15 +11,18 @@ import {
   type ObserverCameraState,
 } from "./camera-state";
 import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
+import { FirstFrameSignal } from "./FirstFrameSignal";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  onFirstFrame?: () => void;
 };
 
 export function PerspectiveDebugCanvas({
   className,
   observerCameraStateRef,
+  onFirstFrame,
 }: PerspectiveDebugCanvasProps) {
   const sharedCubemapTexture = useMemo(() => getSharedCubemapTexture(), []);
 
@@ -58,6 +61,7 @@ export function PerspectiveDebugCanvas({
       <Environment map={sharedCubemapTexture} background />
 
       <DebugCameraFollower observerCameraStateRef={observerCameraStateRef} />
+      <FirstFrameSignal onFirstFrame={onFirstFrame} />
     </Canvas>
   );
 }

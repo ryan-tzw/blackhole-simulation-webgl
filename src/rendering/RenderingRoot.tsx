@@ -8,9 +8,10 @@ import {
   DEFAULT_OBSERVER_CAMERA_STATE,
   type ObserverCameraState,
 } from "./camera-state";
+import { DebugInsetCanvas } from "./DebugInsetCanvas";
 import { FullscreenPassCanvas } from "./FullscreenPassCanvas";
 import { PASS_SHADER_MODES, type PassShaderMode } from "./pass-shader-mode";
-import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas";
+import { StartupLoadingOverlay } from "./StartupLoadingOverlay";
 import "./rendering-root.css";
 
 const DEFAULT_BEND_RENDER_SETTINGS = createBendRenderSettingsDefaults();
@@ -81,22 +82,22 @@ export function RenderingRoot() {
   };
 
   return (
-    <div className="render-root">
-      <FullscreenPassCanvas
-        bendSettings={bendSettings}
-        className="main-pass-canvas"
-        observerCameraStateRef={observerCameraStateRef}
-        mode={passMode}
-        showPerf={showPerf}
-      />
-      {showDebugView ? (
-        <div className="debug-inset">
-          <PerspectiveDebugCanvas
-            className="debug-inset-canvas"
+    <StartupLoadingOverlay>
+      {({ onMainFirstFrame }) => (
+        <div className="render-root">
+          <FullscreenPassCanvas
+            bendSettings={bendSettings}
+            className="main-pass-canvas"
             observerCameraStateRef={observerCameraStateRef}
+            mode={passMode}
+            showPerf={showPerf}
+            onFirstFrame={onMainFirstFrame}
           />
+          {showDebugView ? (
+            <DebugInsetCanvas observerCameraStateRef={observerCameraStateRef} />
+          ) : null}
         </div>
-      ) : null}
-    </div>
+      )}
+    </StartupLoadingOverlay>
   );
 }
