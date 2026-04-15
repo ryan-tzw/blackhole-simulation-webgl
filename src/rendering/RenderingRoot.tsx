@@ -55,9 +55,9 @@ export function RenderingRoot() {
       },
       uStepAdapt: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uStepAdapt,
-        min: 0.001,
+        min: 0.02,
         max: 0.2,
-        step: 0.001,
+        step: 0.01,
       },
       uUseDebugColorOnTerminate: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uUseDebugColorOnTerminate >= 0.5,

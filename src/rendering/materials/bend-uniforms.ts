@@ -15,10 +15,10 @@ export type BendUniformDefaults = {
 export function createBendUniformDefaults(): BendUniformDefaults {
   return {
     uRs: 1.0,
-    uMaxSteps: 512.0,
-    uStepAdapt: 0.02,
+    uMaxSteps: 100.0,
+    uStepAdapt: 0.1,
     uUseDebugColorOnTerminate: 1.0,
-    uEscapeRadius: 100.0,
+    uEscapeRadius: 50.0,
     uEscapeRadiusScale: 1.5,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
