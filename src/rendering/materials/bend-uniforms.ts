@@ -1,4 +1,5 @@
-import { Vector3 } from "three";
+import { Data3DTexture, Vector3 } from "three";
+import { getSharedDiscNoiseTexture } from "@/rendering/environment/disc-noise-texture";
 
 export type BendUniformDefaults = {
   uRs: number;
@@ -22,6 +23,7 @@ export type BendUniformDefaults = {
   uDiscOuterSoftness: number;
   uDiscVerticalFalloffPower: number;
   uDiscIntegrationQuality: number;
+  uDiscNoiseTex: Data3DTexture;
   uCaptureColor: Vector3;
   uMaxIterColor: Vector3;
 };
@@ -52,6 +54,7 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscOuterSoftness: 1.5,
     uDiscVerticalFalloffPower: 1.5,
     uDiscIntegrationQuality: 2.0,
+    uDiscNoiseTex: getSharedDiscNoiseTexture(),
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
   };
