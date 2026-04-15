@@ -6,6 +6,7 @@ float adaptivePhiStep(float u, float uPrime, float radialRate) {
   float baseStep = PHI_BUDGET / uMaxSteps;
   float safeU = max(abs(u), EPS);
 
+  // step limit from first and second order change (u' and u'')
   float hU = uStepAdapt * safeU / (abs(uPrime) + EPS);
   float hCurv = sqrt(
     2.0 * uStepAdapt * safeU / (abs(d2u_dphi2(u, uRs)) + EPS)
