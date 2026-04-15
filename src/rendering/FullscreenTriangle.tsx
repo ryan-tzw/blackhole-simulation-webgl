@@ -104,6 +104,7 @@ export function FullscreenTriangle({
       material.uDiscOuterSoftness = bendSettings.uDiscOuterSoftness;
       material.uDiscVerticalFalloffPower =
         bendSettings.uDiscVerticalFalloffPower;
+      material.uDiscIntegrationQuality = bendSettings.uDiscIntegrationQuality;
     };
 
     updateMaterial(debugMaterialRef.current);

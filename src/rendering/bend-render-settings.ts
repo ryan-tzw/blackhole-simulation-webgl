@@ -19,6 +19,7 @@ export type BendRenderSettings = {
   uDiscInnerSoftness: number;
   uDiscOuterSoftness: number;
   uDiscVerticalFalloffPower: number;
+  uDiscIntegrationQuality: number;
   uEnvExposure: number;
 };
 
@@ -48,6 +49,7 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uDiscInnerSoftness: bendDefaults.uDiscInnerSoftness,
     uDiscOuterSoftness: bendDefaults.uDiscOuterSoftness,
     uDiscVerticalFalloffPower: bendDefaults.uDiscVerticalFalloffPower,
+    uDiscIntegrationQuality: bendDefaults.uDiscIntegrationQuality,
     uEnvExposure: 1.0,
   };
 }

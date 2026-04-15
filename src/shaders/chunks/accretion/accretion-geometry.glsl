@@ -121,33 +121,26 @@ void annulusSegmentsFromOuter(
   annulusSpanB = max(annulusEndB - annulusStartB, 0.0);
 }
 
-float chooseAnnulusMidpoint(
-  float annulusStartA,
-  float annulusEndA,
-  float annulusSpanA,
-  float annulusStartB,
-  float annulusEndB,
-  float annulusSpanB
-) {
-  return annulusSpanA >= annulusSpanB
-    ? 0.5 * (annulusStartA + annulusEndA)
-    : 0.5 * (annulusStartB + annulusEndB);
-}
-
-// Returns segment length inside the disc and a representative midpoint for
-// density sampling. Volume = slab |y| <= uDiscHalfHeight intersect annulus
-// uDiscInnerRadius <= sqrt(x^2+z^2) <= uDiscOuterRadius.
-bool discSegmentProperties(
+// Returns clipped annulus spans in normalized segment-t parameter:
+// p(t) = mix(p0, p1, t), t in [0, 1].
+// Outputs up to two spans: [tA0, tA1] and [tB0, tB1], in traversal order.
+bool discSegmentSpans(
   vec3 p0,
   vec3 p1,
-  out float dsInside,
-  out vec3 pMidInside
+  out float segmentLength,
+  out float tA0,
+  out float tA1,
+  out float tB0,
+  out float tB1
 ) {
-  dsInside = 0.0;
-  pMidInside = p0;
+  segmentLength = 0.0;
+  tA0 = 0.0;
+  tA1 = 0.0;
+  tB0 = 0.0;
+  tB1 = 0.0;
 
   vec3 d = p1 - p0;
-  float segmentLength = length(d);
+  segmentLength = length(d);
   if (segmentLength <= ACCRETION_EPS) {
     return false;
   }
@@ -192,15 +185,9 @@ bool discSegmentProperties(
     return false;
   }
 
-  float tMid = chooseAnnulusMidpoint(
-    annulusStartA,
-    annulusEndA,
-    annulusSpanA,
-    annulusStartB,
-    annulusEndB,
-    annulusSpanB
-  );
-  pMidInside = mix(p0, p1, tMid);
-  dsInside = segmentLength * annulusSpan;
+  tA0 = annulusStartA;
+  tA1 = annulusEndA;
+  tB0 = annulusStartB;
+  tB1 = annulusEndB;
   return true;
 }

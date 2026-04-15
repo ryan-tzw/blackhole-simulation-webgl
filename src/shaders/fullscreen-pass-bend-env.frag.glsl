@@ -29,6 +29,7 @@ uniform vec3 uDiscEmissionColor;
 uniform float uDiscInnerSoftness;
 uniform float uDiscOuterSoftness;
 uniform float uDiscVerticalFalloffPower;
+uniform float uDiscIntegrationQuality;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;
@@ -101,13 +102,27 @@ void main() {
     if (uEnableDiscAccumulation >= 0.5 && uPrev > EPS && u > EPS) {
       vec3 pPrev = geodesicPosition(uPrev, phiPrev, eRadial0, ePhi0);
       vec3 pCurr = geodesicPosition(u, phi, eRadial0, ePhi0);
-      float dsInside = 0.0;
-      vec3 pMidInside = pPrev;
-      if (discSegmentProperties(pPrev, pCurr, dsInside, pMidInside)) {
-        float localDensityFactor = discDensityFactor(pMidInside);
-        accumulateBeerLambert(
-          dsInside,
-          localDensityFactor,
+      float segmentLength = 0.0;
+      float tA0 = 0.0;
+      float tA1 = 0.0;
+      float tB0 = 0.0;
+      float tB1 = 0.0;
+      if (discSegmentSpans(pPrev, pCurr, segmentLength, tA0, tA1, tB0, tB1)) {
+        accumulateBeerLambertSpan(
+          pPrev,
+          pCurr,
+          segmentLength,
+          tA0,
+          tA1,
+          mediumRadiance,
+          mediumTransmittance
+        );
+        accumulateBeerLambertSpan(
+          pPrev,
+          pCurr,
+          segmentLength,
+          tB0,
+          tB1,
           mediumRadiance,
           mediumTransmittance
         );
