@@ -2,9 +2,8 @@ import { createBendUniformDefaults } from "./materials/bend-uniforms";
 
 export type BendRenderSettings = {
   uRs: number;
-  uPhiStepMin: number;
-  uPhiStepMax: number;
   uMaxSteps: number;
+  uStepAdapt: number;
   uEnvExposure: number;
 };
 
@@ -13,9 +12,8 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
 
   return {
     uRs: bendDefaults.uRs,
-    uPhiStepMin: bendDefaults.uPhiStepMin,
-    uPhiStepMax: bendDefaults.uPhiStepMax,
     uMaxSteps: bendDefaults.uMaxSteps,
+    uStepAdapt: bendDefaults.uStepAdapt,
     uEnvExposure: 1.0,
   };
 }

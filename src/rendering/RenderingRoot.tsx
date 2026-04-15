@@ -25,9 +25,8 @@ export function RenderingRoot() {
     showDebugView,
     showPerf,
     uRs,
-    uPhiStepMin,
-    uPhiStepMax,
     uMaxSteps,
+    uStepAdapt,
     uEnvExposure,
   } = useControls("Render", {
     passMode: {
@@ -47,23 +46,17 @@ export function RenderingRoot() {
         max: 4.0,
         step: 0.05,
       },
-      uPhiStepMin: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMin,
-        min: 0.0005,
-        max: 0.05,
-        step: 0.0005,
-      },
-      uPhiStepMax: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uPhiStepMax,
-        min: 0.005,
-        max: 0.5,
-        step: 0.005,
-      },
       uMaxSteps: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uMaxSteps,
         min: 16,
         max: 1024,
         step: 1,
+      },
+      uStepAdapt: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uStepAdapt,
+        min: 0.001,
+        max: 0.2,
+        step: 0.001,
       },
     }),
     Environment: folder({
@@ -77,9 +70,8 @@ export function RenderingRoot() {
   });
   const bendSettings: BendRenderSettings = {
     uRs,
-    uPhiStepMin,
-    uPhiStepMax,
     uMaxSteps,
+    uStepAdapt,
     uEnvExposure,
   };
 

@@ -2,11 +2,8 @@ import { Vector3 } from "three";
 
 export type BendUniformDefaults = {
   uRs: number;
-  uPhiStepMin: number;
-  uPhiStepMax: number;
   uMaxSteps: number;
-  uMaxRelUChange: number;
-  uMaxAbsUPrimeChange: number;
+  uStepAdapt: number;
   uEscapeRadius: number;
   uEscapeRadiusScale: number;
   uCaptureColor: Vector3;
@@ -17,11 +14,8 @@ export type BendUniformDefaults = {
 export function createBendUniformDefaults(): BendUniformDefaults {
   return {
     uRs: 1.0,
-    uPhiStepMin: 0.005,
-    uPhiStepMax: 0.5,
     uMaxSteps: 512.0,
-    uMaxRelUChange: 0.01,
-    uMaxAbsUPrimeChange: 0.01,
+    uStepAdapt: 0.02,
     uEscapeRadius: 100.0,
     uEscapeRadiusScale: 4.0,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),

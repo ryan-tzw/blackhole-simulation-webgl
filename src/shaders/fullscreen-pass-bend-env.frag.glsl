@@ -8,11 +8,8 @@ uniform float uFovY;
 uniform float uAspect;
 
 uniform float uRs;
-uniform float uPhiStepMin;
-uniform float uPhiStepMax;
 uniform float uMaxSteps;
-uniform float uMaxRelUChange;
-uniform float uMaxAbsUPrimeChange;
+uniform float uStepAdapt;
 uniform float uEscapeRadius;
 uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
@@ -114,7 +111,7 @@ void main() {
       break;
     }
 
-    float phiStep = adaptivePhiStep(u, uPrime, uRs);
+    float phiStep = adaptivePhiStep(u, uPrime);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
 
@@ -123,10 +120,10 @@ void main() {
       return;
     }
 
-    // u <= 0 should be physically impossible (negative radius),
-    // but if it happens due to numerical issues we treat it as escape
+    // u <= 0 should be physically impossible (negative radius).
+    // Treat as unresolved for debug visibility.
     if (u <= EPS) {
-      renderEnv(bentRayDirection(max(u, EPS), uPrime, phi, angularMomentum, eRadial0, ePhi0));
+      gl_FragColor = vec4(uMaxIterColor, 1.0);
       return;
     }
 
@@ -136,7 +133,7 @@ void main() {
       return;
     }
 
-    if (r >= effectiveEscapeRadius) {
+    if (r >= effectiveEscapeRadius && uPrime < 0.0) {
       renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
       return;
     }

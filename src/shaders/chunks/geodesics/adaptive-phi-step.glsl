@@ -1,11 +1,11 @@
-float adaptivePhiStep(float u, float uPrime, float rs) {
-  float safeU = max(abs(u), EPS);
-  float safeUPrime = max(abs(uPrime), EPS);
-  float safeCurvature = max(abs(d2u_dphi2(u, rs)), EPS);
+float adaptivePhiStep(float u, float uPrime) {
+  const float PI = 3.14159265359;
+  const float PHI_BUDGET = 24.0 * PI;
+  const float MIN_STEP_RATIO = 0.05;
+  float safeStepBudget = max(uMaxSteps, 1.0);
+  float baseStep = PHI_BUDGET / safeStepBudget;
+  float adaptiveStep = uStepAdapt * abs(u) / (abs(uPrime) + EPS);
+  float minStep = baseStep * MIN_STEP_RATIO;
 
-  float stepFromRelU = uMaxRelUChange * safeU / safeUPrime;
-  float stepFromCurvature = uMaxAbsUPrimeChange / safeCurvature;
-  float step = min(stepFromRelU, stepFromCurvature);
-
-  return clamp(step, uPhiStepMin, uPhiStepMax);
+  return clamp(min(baseStep, adaptiveStep), minStep, baseStep);
 }

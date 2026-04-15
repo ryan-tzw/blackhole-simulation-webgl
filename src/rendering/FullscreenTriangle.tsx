@@ -85,9 +85,8 @@ export function FullscreenTriangle({
 
       updateMaterial(material);
       material.uRs = bendSettings.uRs;
-      material.uPhiStepMin = bendSettings.uPhiStepMin;
-      material.uPhiStepMax = bendSettings.uPhiStepMax;
       material.uMaxSteps = bendSettings.uMaxSteps;
+      material.uStepAdapt = bendSettings.uStepAdapt;
     };
 
     updateMaterial(debugMaterialRef.current);
