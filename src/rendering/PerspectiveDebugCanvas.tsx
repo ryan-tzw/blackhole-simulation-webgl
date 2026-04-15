@@ -1,14 +1,8 @@
-import {
-  Environment,
-  Grid,
-  OrbitControls,
-  PerspectiveCamera,
-} from "@react-three/drei";
+import { Environment, Grid, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useMemo } from "react";
+import { useMemo, type RefObject } from "react";
 import {
   DoubleSide,
-  MathUtils,
   PerspectiveCamera as ThreePerspectiveCamera,
   Vector3,
 } from "three";
@@ -20,12 +14,12 @@ import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
-  onCameraUpdate: (cameraState: ObserverCameraState) => void;
+  observerCameraStateRef: RefObject<ObserverCameraState>;
 };
 
 export function PerspectiveDebugCanvas({
   className,
-  onCameraUpdate,
+  observerCameraStateRef,
 }: PerspectiveDebugCanvasProps) {
   const sharedCubemapTexture = useMemo(() => getSharedCubemapTexture(), []);
 
@@ -40,7 +34,6 @@ export function PerspectiveDebugCanvas({
         near={OBSERVER_CAMERA_DEFAULTS.near}
         far={OBSERVER_CAMERA_DEFAULTS.far}
       />
-      <OrbitControls target={OBSERVER_CAMERA_DEFAULTS.target} />
 
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 6, 3]} intensity={1.2} />
@@ -64,40 +57,41 @@ export function PerspectiveDebugCanvas({
 
       <Environment map={sharedCubemapTexture} background />
 
-      <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
+      <DebugCameraFollower observerCameraStateRef={observerCameraStateRef} />
     </Canvas>
   );
 }
 
-type PerspectiveCameraStatePublisherProps = {
-  onCameraUpdate: (cameraState: ObserverCameraState) => void;
+type DebugCameraFollowerProps = {
+  observerCameraStateRef: RefObject<ObserverCameraState>;
 };
 
-function PerspectiveCameraStatePublisher({
-  onCameraUpdate,
-}: PerspectiveCameraStatePublisherProps) {
-  const worldForward = useMemo(() => new Vector3(), []);
-  const worldRight = useMemo(() => new Vector3(), []);
-  const worldUp = useMemo(() => new Vector3(), []);
+function DebugCameraFollower({
+  observerCameraStateRef,
+}: DebugCameraFollowerProps) {
+  const lookAtTarget = useMemo(() => new Vector3(), []);
+  const nextPosition = useMemo(() => new Vector3(), []);
+  const nextForward = useMemo(() => new Vector3(), []);
+  const nextUp = useMemo(() => new Vector3(), []);
 
   useFrame(({ camera }) => {
     if (!(camera instanceof ThreePerspectiveCamera)) {
       return;
     }
 
+    const cameraState = observerCameraStateRef.current;
     const perspectiveCamera = camera;
-    perspectiveCamera.getWorldDirection(worldForward);
-    worldRight.set(1, 0, 0).applyQuaternion(perspectiveCamera.quaternion);
-    worldUp.set(0, 1, 0).applyQuaternion(perspectiveCamera.quaternion);
 
-    onCameraUpdate({
-      position: [...perspectiveCamera.position.toArray()],
-      right: [...worldRight.toArray()],
-      up: [...worldUp.toArray()],
-      forward: [...worldForward.toArray()],
-      fovYRadians: MathUtils.degToRad(perspectiveCamera.fov),
-      aspect: perspectiveCamera.aspect,
-    });
+    nextPosition.set(...cameraState.position);
+    nextForward.set(...cameraState.forward).normalize();
+    nextUp.set(...cameraState.up).normalize();
+    lookAtTarget.copy(nextPosition).add(nextForward);
+
+    perspectiveCamera.position.copy(nextPosition);
+    perspectiveCamera.up.copy(nextUp);
+    perspectiveCamera.fov = (cameraState.fovYRadians * 180) / Math.PI;
+    perspectiveCamera.lookAt(lookAtTarget);
+    perspectiveCamera.updateProjectionMatrix();
   });
 
   return null;

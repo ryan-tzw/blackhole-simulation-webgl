@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { folder, useControls } from "leva";
 import {
   createBendRenderSettingsDefaults,
@@ -19,10 +19,6 @@ export function RenderingRoot() {
   const observerCameraStateRef = useRef<ObserverCameraState>(
     DEFAULT_OBSERVER_CAMERA_STATE,
   );
-
-  const handleCameraUpdate = useCallback((cameraState: ObserverCameraState) => {
-    observerCameraStateRef.current = cameraState;
-  }, []);
 
   const {
     passMode,
@@ -96,14 +92,14 @@ export function RenderingRoot() {
         mode={passMode}
         showPerf={showPerf}
       />
-      <div
-        className={`debug-inset${showDebugView ? "" : " debug-inset-hidden"}`}
-      >
-        <PerspectiveDebugCanvas
-          className="debug-inset-canvas"
-          onCameraUpdate={handleCameraUpdate}
-        />
-      </div>
+      {showDebugView ? (
+        <div className="debug-inset">
+          <PerspectiveDebugCanvas
+            className="debug-inset-canvas"
+            observerCameraStateRef={observerCameraStateRef}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
