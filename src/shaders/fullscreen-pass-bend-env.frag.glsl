@@ -27,71 +27,11 @@ const float RADIAL_BLEND_OUT = 0.02;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
+#include ./chunks/geodesics/geodesic-state.glsl;
 #include ./chunks/accretion/accretion-disc.glsl;
 #include ./chunks/color/aces-tonemap.glsl;
-
-// Converts integrated 2D geodesic state back to world-space ray direction
-vec3 bentRayDirection(
-  float u,
-  float uPrime,
-  float phi,
-  float angularMomentum,
-  vec3 eRadial0,
-  vec3 ePhi0
-) {
-  // eRadial0/ePhi0 = initial radial and azimuthal unit vectors at the camera position
-  // rotate by azimuthal angle phi to get current radial and azimuthal unit vectors
-  float cosPhi = cos(phi);
-  float sinPhi = sin(phi);
-  vec3 eRadial = cosPhi * eRadial0 + sinPhi * ePhi0;
-  vec3 ePhi = -sinPhi * eRadial0 + cosPhi * ePhi0;
-
-  float safeU = max(u, EPS);
-
-  float dphi_dlambda = angularMomentum * safeU * safeU;
-  float du_dlambda = uPrime * dphi_dlambda;
-  float dr_dlambda = -du_dlambda / (safeU * safeU);
-  float r = 1.0 / safeU;
-
-  return normalize(dr_dlambda * eRadial + (r * dphi_dlambda) * ePhi);
-}
-
-vec3 geodesicPosition(float u, float phi, vec3 eRadial0, vec3 ePhi0) {
-  float safeU = max(u, EPS);
-  float r = 1.0 / safeU;
-  float cosPhi = cos(phi);
-  float sinPhi = sin(phi);
-  vec3 eRadial = cosPhi * eRadial0 + sinPhi * ePhi0;
-  return r * eRadial;
-}
-
-vec3 sampleEnvLinear(vec3 worldDirection) {
-  vec3 cubeDirection = normalize(worldDirection);
-  cubeDirection.x *= -1.0;
-  return textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
-}
-
-void writeLinearColor(vec3 linearColor) {
-  vec3 toneMapped = acesTonemap(linearColor);
-  gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
-}
-
-void renderEnv(vec3 worldDirection) {
-  writeLinearColor(sampleEnvLinear(worldDirection));
-}
-
-void renderCaptureWithMedium(vec3 mediumRadiance, float mediumTransmittance) {
-  writeLinearColor(mediumRadiance + mediumTransmittance * uCaptureColor);
-}
-
-void renderEnvWithMedium(
-  vec3 worldDirection,
-  vec3 mediumRadiance,
-  float mediumTransmittance
-) {
-  vec3 envLinear = sampleEnvLinear(worldDirection);
-  writeLinearColor(mediumRadiance + mediumTransmittance * envLinear);
-}
+#include ./chunks/env/env-render.glsl;
+#include ./chunks/termination/termination-env.glsl;
 
 void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
   // todo: add straight-line medium accumulation here.
@@ -101,35 +41,6 @@ void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
   }
 
   renderEnv(rayDirection);
-}
-
-void renderTerminationResult(
-  vec3 fallbackDirection,
-  float u,
-  float uPrime,
-  float phi,
-  float angularMomentum,
-  vec3 eRadial0,
-  vec3 ePhi0,
-  bool hasGeodesicState,
-  vec3 mediumRadiance,
-  float mediumTransmittance
-) {
-  if (uUseDebugColorOnTerminate >= 0.5) {
-    gl_FragColor = vec4(uMaxIterColor, 1.0);
-    return;
-  }
-
-  if (hasGeodesicState) {
-    renderEnvWithMedium(
-      bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0),
-      mediumRadiance,
-      mediumTransmittance
-    );
-    return;
-  }
-
-  renderEnvWithMedium(fallbackDirection, mediumRadiance, mediumTransmittance);
 }
 
 void main() {
