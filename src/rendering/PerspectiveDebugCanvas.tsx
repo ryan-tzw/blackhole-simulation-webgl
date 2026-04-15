@@ -16,7 +16,7 @@ import {
   OBSERVER_CAMERA_DEFAULTS,
   type ObserverCameraState,
 } from "./camera-state";
-import { CUBEMAP_FACE_FILES } from "@/rendering/environment/cubemap";
+import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
@@ -27,6 +27,8 @@ export function PerspectiveDebugCanvas({
   className,
   onCameraUpdate,
 }: PerspectiveDebugCanvasProps) {
+  const sharedCubemapTexture = useMemo(() => getSharedCubemapTexture(), []);
+
   return (
     <Canvas className={className}>
       <color attach="background" args={["#1a1d24"]} />
@@ -60,7 +62,7 @@ export function PerspectiveDebugCanvas({
       />
       <axesHelper args={[2]} />
 
-      <Environment files={[...CUBEMAP_FACE_FILES]} background />
+      <Environment map={sharedCubemapTexture} background />
 
       <PerspectiveCameraStatePublisher onCameraUpdate={onCameraUpdate} />
     </Canvas>
