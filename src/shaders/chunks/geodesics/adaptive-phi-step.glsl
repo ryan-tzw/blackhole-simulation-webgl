@@ -11,11 +11,10 @@ float adaptivePhiStep(float u, float uPrime, float radialRate) {
     2.0 * uStepAdapt * safeU / (abs(d2u_dphi2(u, uRs)) + EPS)
   );
 
-  // float step = min(baseStep, min(hU, hCurv));
-  float step = hU;
+  float step = min(baseStep, min(hU, hCurv));
 
   float radialGate = smoothstep(0.05, 0.9, abs(radialRate));
-  float boost = 1.0 + 3.0 * radialGate;
+  float boost = 1.0 + 1.0 * radialGate;
   step = boost * step;
 
   float minStep = baseStep * MIN_STEP_RATIO;

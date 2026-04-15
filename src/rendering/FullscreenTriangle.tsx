@@ -87,6 +87,8 @@ export function FullscreenTriangle({
       material.uRs = bendSettings.uRs;
       material.uMaxSteps = bendSettings.uMaxSteps;
       material.uStepAdapt = bendSettings.uStepAdapt;
+      material.uUseDebugColorOnTerminate =
+        bendSettings.uUseDebugColorOnTerminate;
     };
 
     updateMaterial(debugMaterialRef.current);

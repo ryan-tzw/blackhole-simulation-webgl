@@ -10,6 +10,7 @@ uniform float uAspect;
 uniform float uRs;
 uniform float uMaxSteps;
 uniform float uStepAdapt;
+uniform float uUseDebugColorOnTerminate;
 uniform float uEscapeRadius;
 uniform float uEscapeRadiusScale;
 uniform vec3 uCaptureColor;
@@ -72,6 +73,29 @@ void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
   renderEnv(rayDirection);
 }
 
+void renderTerminationResult(
+  vec3 fallbackDirection,
+  float u,
+  float uPrime,
+  float phi,
+  float angularMomentum,
+  vec3 eRadial0,
+  vec3 ePhi0,
+  bool hasGeodesicState
+) {
+  if (uUseDebugColorOnTerminate >= 0.5) {
+    gl_FragColor = vec4(uMaxIterColor, 1.0);
+    return;
+  }
+
+  if (hasGeodesicState) {
+    renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
+    return;
+  }
+
+  renderEnv(fallbackDirection);
+}
+
 void main() {
   // Convert from NDC to world space ray direction
   vec2 ndc = vUv * 2.0 - 1.0;
@@ -111,23 +135,39 @@ void main() {
   float phi = 0.0;
 
   for (int i = 0; i < MAX_STEPS; i++) {
-    if (float(i) >= uMaxSteps) {
-      break;
-    }
+    if (float(i) >= uMaxSteps) { break; }
 
     float phiStep = adaptivePhiStep(u, uPrime, radialRate);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
 
-    if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
-      gl_FragColor = vec4(uMaxIterColor, 1.0);
-      return;
-    }
+    // if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
+    //   renderTerminationResult(
+    //     rayDirection,
+    //     u,
+    //     uPrime,
+    //     phi,
+    //     angularMomentum,
+    //     eRadial0,
+    //     ePhi0,
+    //     false
+    //   );
+    //   return;
+    // }
 
     // u <= 0 should be physically impossible (negative radius).
     // Treat as unresolved for debug visibility.
     if (u <= EPS) {
-      gl_FragColor = vec4(uMaxIterColor, 1.0);
+      renderTerminationResult(
+        rayDirection,
+        u,
+        uPrime,
+        phi,
+        angularMomentum,
+        eRadial0,
+        ePhi0,
+        false
+      );
       return;
     }
 
@@ -143,5 +183,14 @@ void main() {
     }
   }
 
-  gl_FragColor = vec4(uMaxIterColor, 1.0);
+  renderTerminationResult(
+    rayDirection,
+    u,
+    uPrime,
+    phi,
+    angularMomentum,
+    eRadial0,
+    ePhi0,
+    true
+  );
 }

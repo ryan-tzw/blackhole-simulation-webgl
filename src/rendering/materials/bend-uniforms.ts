@@ -4,6 +4,7 @@ export type BendUniformDefaults = {
   uRs: number;
   uMaxSteps: number;
   uStepAdapt: number;
+  uUseDebugColorOnTerminate: number;
   uEscapeRadius: number;
   uEscapeRadiusScale: number;
   uCaptureColor: Vector3;
@@ -16,8 +17,9 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uRs: 1.0,
     uMaxSteps: 512.0,
     uStepAdapt: 0.02,
+    uUseDebugColorOnTerminate: 1.0,
     uEscapeRadius: 100.0,
-    uEscapeRadiusScale: 4.0,
+    uEscapeRadiusScale: 1.5,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
   };

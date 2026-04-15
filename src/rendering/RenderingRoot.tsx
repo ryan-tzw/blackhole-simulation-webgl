@@ -27,6 +27,7 @@ export function RenderingRoot() {
     uRs,
     uMaxSteps,
     uStepAdapt,
+    uUseDebugColorOnTerminate,
     uEnvExposure,
   } = useControls("Render", {
     passMode: {
@@ -58,6 +59,9 @@ export function RenderingRoot() {
         max: 0.2,
         step: 0.001,
       },
+      uUseDebugColorOnTerminate: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uUseDebugColorOnTerminate >= 0.5,
+      },
     }),
     Environment: folder({
       uEnvExposure: {
@@ -72,6 +76,7 @@ export function RenderingRoot() {
     uRs,
     uMaxSteps,
     uStepAdapt,
+    uUseDebugColorOnTerminate: uUseDebugColorOnTerminate ? 1.0 : 0.0,
     uEnvExposure,
   };
 
