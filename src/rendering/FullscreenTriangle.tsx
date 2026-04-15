@@ -87,6 +87,10 @@ export function FullscreenTriangle({
       material.uRs = bendSettings.uRs;
       material.uMaxSteps = bendSettings.uMaxSteps;
       material.uStepAdapt = bendSettings.uStepAdapt;
+      material.uPhiBudget = bendSettings.uPhiBudget;
+      material.uMinStepRatio = bendSettings.uMinStepRatio;
+      material.uRadialStepBoost = bendSettings.uRadialStepBoost;
+      material.uEnableDiscAccumulation = bendSettings.uEnableDiscAccumulation;
       material.uUseDebugColorOnTerminate =
         bendSettings.uUseDebugColorOnTerminate;
       material.uDiscInnerRadius = bendSettings.uDiscInnerRadius;

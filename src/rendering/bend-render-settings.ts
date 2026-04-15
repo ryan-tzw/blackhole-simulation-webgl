@@ -4,6 +4,10 @@ export type BendRenderSettings = {
   uRs: number;
   uMaxSteps: number;
   uStepAdapt: number;
+  uPhiBudget: number;
+  uMinStepRatio: number;
+  uRadialStepBoost: number;
+  uEnableDiscAccumulation: number;
   uUseDebugColorOnTerminate: number;
   uDiscInnerRadius: number;
   uDiscOuterRadius: number;
@@ -22,6 +26,10 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uRs: bendDefaults.uRs,
     uMaxSteps: bendDefaults.uMaxSteps,
     uStepAdapt: bendDefaults.uStepAdapt,
+    uPhiBudget: bendDefaults.uPhiBudget,
+    uMinStepRatio: bendDefaults.uMinStepRatio,
+    uRadialStepBoost: bendDefaults.uRadialStepBoost,
+    uEnableDiscAccumulation: bendDefaults.uEnableDiscAccumulation,
     uUseDebugColorOnTerminate: bendDefaults.uUseDebugColorOnTerminate,
     uDiscInnerRadius: bendDefaults.uDiscInnerRadius,
     uDiscOuterRadius: bendDefaults.uDiscOuterRadius,

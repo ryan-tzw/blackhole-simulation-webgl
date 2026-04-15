@@ -4,6 +4,10 @@ export type BendUniformDefaults = {
   uRs: number;
   uMaxSteps: number;
   uStepAdapt: number;
+  uPhiBudget: number;
+  uMinStepRatio: number;
+  uRadialStepBoost: number;
+  uEnableDiscAccumulation: number;
   uUseDebugColorOnTerminate: number;
   uEscapeRadius: number;
   uEscapeRadiusScale: number;
@@ -20,10 +24,16 @@ export type BendUniformDefaults = {
 
 // OSOT: canonical shared defaults for bend-debug and bend-env uniforms.
 export function createBendUniformDefaults(): BendUniformDefaults {
+  const PI = 3.14159265359;
+
   return {
     uRs: 1.0,
     uMaxSteps: 100.0,
     uStepAdapt: 0.1,
+    uPhiBudget: 24.0 * PI,
+    uMinStepRatio: 0.01,
+    uRadialStepBoost: 0.0,
+    uEnableDiscAccumulation: 1.0,
     uUseDebugColorOnTerminate: 1.0,
     uEscapeRadius: 50.0,
     uEscapeRadiusScale: 1.5,

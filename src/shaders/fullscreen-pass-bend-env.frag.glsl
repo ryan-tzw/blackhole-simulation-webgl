@@ -10,6 +10,10 @@ uniform float uAspect;
 uniform float uRs;
 uniform float uMaxSteps;
 uniform float uStepAdapt;
+uniform float uPhiBudget;
+uniform float uMinStepRatio;
+uniform float uRadialStepBoost;
+uniform float uEnableDiscAccumulation;
 uniform float uUseDebugColorOnTerminate;
 uniform float uEscapeRadius;
 uniform float uEscapeRadiusScale;
@@ -29,8 +33,6 @@ uniform float uEnvExposure;
 const int MAX_STEPS = 1024;
 const float EPS = 1e-6;
 const float LARGE_VALUE = 1e8;
-const float RADIAL_BLEND_IN = 0.002;
-const float RADIAL_BLEND_OUT = 0.02;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
@@ -39,16 +41,6 @@ const float RADIAL_BLEND_OUT = 0.02;
 #include ./chunks/color/aces-tonemap.glsl;
 #include ./chunks/env/env-render.glsl;
 #include ./chunks/termination/termination-env.glsl;
-
-void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
-  // todo: add straight-line medium accumulation here.
-  if (radialRate < 0.0) {
-    gl_FragColor = vec4(uCaptureColor, 1.0);
-    return;
-  }
-
-  renderEnv(rayDirection);
-}
 
 void main() {
   // Convert from NDC to world space ray direction
@@ -75,20 +67,20 @@ void main() {
   vec3 tangent = rayDirection - radialRate * eRadial0; // tangent component of ray velocity
   float tangentLen = length(tangent);
 
-  // near-radial trajectory fallback for the singular limit.
-  if (tangentLen < RADIAL_BLEND_IN) {
-    renderNearRadialFallback(rayDirection, radialRate);
-    return;
-  }
-
-  float radialBlend = smoothstep(RADIAL_BLEND_IN, RADIAL_BLEND_OUT, tangentLen);
-  float tangentLenSafe = mix(RADIAL_BLEND_IN, tangentLen, radialBlend);
-  vec3 ePhi0 = tangent / tangentLen;
+  float tangentLenSafe = max(tangentLen, EPS);
+  vec3 ePhiFallback = normalize(
+    cross(
+      abs(eRadial0.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0),
+      eRadial0
+    )
+  );
+  vec3 ePhi0 = tangentLen > EPS ? (tangent / tangentLen) : ePhiFallback;
 
   // initial conditions for the ODE (lambda = path parameter)
   float angularMomentum = r0 * tangentLen;
   float u = 1.0 / r0;
-  float uPrime = -(u * radialRate) / tangentLenSafe; // du/dphi (scale-invariant form)
+  float uPrimeRaw = -(u * radialRate) / tangentLenSafe; // du/dphi (scale-invariant form)
+  float uPrime = uPrimeRaw;
   float phi = 0.0;
 
   for (int i = 0; i < MAX_STEPS; i++) {
@@ -101,7 +93,7 @@ void main() {
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
 
-    if (uPrev > EPS && u > EPS) {
+    if (uEnableDiscAccumulation >= 0.5 && uPrev > EPS && u > EPS) {
       vec3 pPrev = geodesicPosition(uPrev, phiPrev, eRadial0, ePhi0);
       vec3 pCurr = geodesicPosition(u, phi, eRadial0, ePhi0);
       float dsInside = discSegmentLength(pPrev, pCurr);
@@ -125,20 +117,6 @@ void main() {
       );
       return;
     }
-
-    // if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
-    //   renderTerminationResult(
-    //     rayDirection,
-    //     u,
-    //     uPrime,
-    //     phi,
-    //     angularMomentum,
-    //     eRadial0,
-    //     ePhi0,
-    //     false
-    //   );
-    //   return;
-    // }
 
     // u <= 0 should be physically impossible (negative radius).
     // Treat as unresolved for debug visibility.

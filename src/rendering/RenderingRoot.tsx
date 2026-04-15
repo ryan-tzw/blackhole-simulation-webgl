@@ -29,6 +29,10 @@ export function RenderingRoot() {
     uMaxSteps,
     uStepAdapt,
     uUseDebugColorOnTerminate,
+    uPhiBudget,
+    uMinStepRatio,
+    uRadialStepBoost,
+    uEnableDiscAccumulation,
     uDiscInnerRadius,
     uDiscOuterRadius,
     uDiscHalfHeight,
@@ -73,7 +77,30 @@ export function RenderingRoot() {
         value: DEFAULT_BEND_RENDER_SETTINGS.uUseDebugColorOnTerminate >= 0.5,
       },
     }),
+    DebugNarrowing: folder({
+      uPhiBudget: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uPhiBudget,
+        min: 2.0,
+        max: 200.0,
+        step: 1.0,
+      },
+      uMinStepRatio: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uMinStepRatio,
+        min: 0.0,
+        max: 0.5,
+        step: 0.001,
+      },
+      uRadialStepBoost: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uRadialStepBoost,
+        min: 0.0,
+        max: 2.0,
+        step: 0.01,
+      },
+    }),
     AccretionDisc: folder({
+      uEnableDiscAccumulation: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uEnableDiscAccumulation >= 0.5,
+      },
       uDiscInnerRadius: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerRadius,
         min: 0.0,
@@ -142,6 +169,10 @@ export function RenderingRoot() {
     uRs,
     uMaxSteps,
     uStepAdapt,
+    uPhiBudget,
+    uMinStepRatio,
+    uRadialStepBoost,
+    uEnableDiscAccumulation: uEnableDiscAccumulation ? 1.0 : 0.0,
     uUseDebugColorOnTerminate: uUseDebugColorOnTerminate ? 1.0 : 0.0,
     uDiscInnerRadius,
     uDiscOuterRadius,
