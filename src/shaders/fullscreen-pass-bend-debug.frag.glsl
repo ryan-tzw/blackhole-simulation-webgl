@@ -66,8 +66,15 @@ void main() {
       break;
     }
 
+    float uPrev = u;
+    float uPrimePrev = uPrime;
     float phiStep = adaptivePhiStep(u, uPrime, radialRate);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
+
+    if (uPrev > EPS && u <= EPS && uPrimePrev < 0.0) {
+      gl_FragColor = vec4(uEscapeColor, 1.0);
+      return;
+    }
 
     if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
       gl_FragColor = vec4(uMaxIterColor, 1.0);

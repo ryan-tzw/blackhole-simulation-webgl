@@ -137,9 +137,26 @@ void main() {
   for (int i = 0; i < MAX_STEPS; i++) {
     if (float(i) >= uMaxSteps) { break; }
 
+    float uPrev = u;
+    float uPrimePrev = uPrime;
+    float phiPrev = phi;
     float phiStep = adaptivePhiStep(u, uPrime, radialRate);
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
+
+    if (uPrev > EPS && u <= EPS && uPrimePrev < 0.0) {
+      renderEnv(
+        bentRayDirection(
+          uPrev,
+          uPrimePrev,
+          phiPrev,
+          angularMomentum,
+          eRadial0,
+          ePhi0
+        )
+      );
+      return;
+    }
 
     // if (abs(u) > LARGE_VALUE || abs(uPrime) > LARGE_VALUE) {
     //   renderTerminationResult(
