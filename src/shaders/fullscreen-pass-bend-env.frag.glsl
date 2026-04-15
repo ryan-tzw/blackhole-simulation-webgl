@@ -27,6 +27,7 @@ const float RADIAL_BLEND_OUT = 0.02;
 
 #include ./chunks/geodesics/schwarzschild-rk4.glsl;
 #include ./chunks/geodesics/adaptive-phi-step.glsl;
+#include ./chunks/accretion/accretion-disc.glsl;
 #include ./chunks/color/aces-tonemap.glsl;
 
 // Converts integrated 2D geodesic state back to world-space ray direction
@@ -55,12 +56,41 @@ vec3 bentRayDirection(
   return normalize(dr_dlambda * eRadial + (r * dphi_dlambda) * ePhi);
 }
 
-void renderEnv(vec3 worldDirection) {
+vec3 geodesicPosition(float u, float phi, vec3 eRadial0, vec3 ePhi0) {
+  float safeU = max(u, EPS);
+  float r = 1.0 / safeU;
+  float cosPhi = cos(phi);
+  float sinPhi = sin(phi);
+  vec3 eRadial = cosPhi * eRadial0 + sinPhi * ePhi0;
+  return r * eRadial;
+}
+
+vec3 sampleEnvLinear(vec3 worldDirection) {
   vec3 cubeDirection = normalize(worldDirection);
   cubeDirection.x *= -1.0;
-  vec3 envColor = textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
-  vec3 toneMapped = acesTonemap(envColor);
+  return textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
+}
+
+void writeLinearColor(vec3 linearColor) {
+  vec3 toneMapped = acesTonemap(linearColor);
   gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
+}
+
+void renderEnv(vec3 worldDirection) {
+  writeLinearColor(sampleEnvLinear(worldDirection));
+}
+
+void renderCaptureWithMedium(vec3 mediumRadiance, float mediumTransmittance) {
+  writeLinearColor(mediumRadiance + mediumTransmittance * uCaptureColor);
+}
+
+void renderEnvWithMedium(
+  vec3 worldDirection,
+  vec3 mediumRadiance,
+  float mediumTransmittance
+) {
+  vec3 envLinear = sampleEnvLinear(worldDirection);
+  writeLinearColor(mediumRadiance + mediumTransmittance * envLinear);
 }
 
 void renderNearRadialFallback(vec3 rayDirection, float radialRate) {
@@ -81,7 +111,9 @@ void renderTerminationResult(
   float angularMomentum,
   vec3 eRadial0,
   vec3 ePhi0,
-  bool hasGeodesicState
+  bool hasGeodesicState,
+  vec3 mediumRadiance,
+  float mediumTransmittance
 ) {
   if (uUseDebugColorOnTerminate >= 0.5) {
     gl_FragColor = vec4(uMaxIterColor, 1.0);
@@ -89,11 +121,15 @@ void renderTerminationResult(
   }
 
   if (hasGeodesicState) {
-    renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
+    renderEnvWithMedium(
+      bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0),
+      mediumRadiance,
+      mediumTransmittance
+    );
     return;
   }
 
-  renderEnv(fallbackDirection);
+  renderEnvWithMedium(fallbackDirection, mediumRadiance, mediumTransmittance);
 }
 
 void main() {
@@ -108,8 +144,11 @@ void main() {
   vec3 cameraPos = uCameraPos;
   float r0 = length(cameraPos);
   float effectiveEscapeRadius = max(uEscapeRadius, uEscapeRadiusScale * r0);
+  vec3 mediumRadiance = vec3(0.0);
+  float mediumTransmittance = 1.0;
+
   if (r0 <= uRs) {
-    gl_FragColor = vec4(uCaptureColor, 1.0);
+    renderCaptureWithMedium(mediumRadiance, mediumTransmittance);
     return;
   }
 
@@ -144,8 +183,17 @@ void main() {
     rk4StepSecondOrder(u, uPrime, phiStep, uRs);
     phi += phiStep;
 
+    if (uPrev > EPS && u > EPS) {
+      vec3 pPrev = geodesicPosition(uPrev, phiPrev, eRadial0, ePhi0);
+      vec3 pCurr = geodesicPosition(u, phi, eRadial0, ePhi0);
+      float dsInside = discSegmentLength(pPrev, pCurr);
+      if (dsInside > 0.0) {
+        accumulateBeerLambert(dsInside, mediumRadiance, mediumTransmittance);
+      }
+    }
+
     if (uPrev > EPS && u <= EPS && uPrimePrev < 0.0) {
-      renderEnv(
+      renderEnvWithMedium(
         bentRayDirection(
           uPrev,
           uPrimePrev,
@@ -153,7 +201,9 @@ void main() {
           angularMomentum,
           eRadial0,
           ePhi0
-        )
+        ),
+        mediumRadiance,
+        mediumTransmittance
       );
       return;
     }
@@ -183,19 +233,25 @@ void main() {
         angularMomentum,
         eRadial0,
         ePhi0,
-        false
+        false,
+        mediumRadiance,
+        mediumTransmittance
       );
       return;
     }
 
     float r = 1.0 / u;
     if (r <= uRs) {
-      gl_FragColor = vec4(uCaptureColor, 1.0);
+      renderCaptureWithMedium(mediumRadiance, mediumTransmittance);
       return;
     }
 
     if (r >= effectiveEscapeRadius && uPrime < 0.0) {
-      renderEnv(bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0));
+      renderEnvWithMedium(
+        bentRayDirection(u, uPrime, phi, angularMomentum, eRadial0, ePhi0),
+        mediumRadiance,
+        mediumTransmittance
+      );
       return;
     }
   }
@@ -208,6 +264,8 @@ void main() {
     angularMomentum,
     eRadial0,
     ePhi0,
-    true
+    true,
+    mediumRadiance,
+    mediumTransmittance
   );
 }
