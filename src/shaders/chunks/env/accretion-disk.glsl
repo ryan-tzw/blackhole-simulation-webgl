@@ -94,7 +94,7 @@ vec3 toSpherical(vec3 p) {
   float theta = atan(p.z, p.x);
   float phi = asin(p.y / rho);
   // Use sin/cos so the angle wraps smoothly instead of jumping at +/- pi
-  return vec3(rho, cos(theta), sin(theta) + phi);
+  return vec3(rho, theta, phi);
 }
 
 // Procedural colour map
@@ -133,12 +133,19 @@ void accumulateDiskColor(vec3 pos, float stepDist, inout vec3 accumulatedColor) 
   // 4. Cloud Noise Generation
   float noise = 1.0;
   for(int i = 0; i < int(ADISK_NOISE_LOD); i++) {
-    noise *= 0.5 * snoise(sphericalCoord * pow(float(i), 2.0) * ADISK_NOISE_SCALE) + 0.5;
-    // Alternate rotation direction for different noise layers
+    float layerTheta = sphericalCoord.y;
     if(i % 2 == 0)
-      sphericalCoord.y += uTime * ADISK_SPEED;
+      layerTheta += uTime * ADISK_SPEED;
     else
-      sphericalCoord.y -= uTime * ADISK_SPEED;
+      layerTheta -= uTime * ADISK_SPEED;
+
+    vec3 layerCoord = vec3(
+      sphericalCoord.x,
+      cos(layerTheta),
+      sin(layerTheta) + sphericalCoord.z
+    );
+
+    noise *= 0.5 * snoise(layerCoord * pow(float(i), 2.0) * ADISK_NOISE_SCALE) + 0.5;
   }
 
   // 5. Get procedural color based on distance from center
