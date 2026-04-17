@@ -30,6 +30,8 @@ export type BendRenderSettings = {
   uDiscSpinMaxOmega: number;
   uDiscAdvectionCycleSeconds: number;
   uDiscAdvectionBlendFraction: number;
+  uDiscDopplerStrength: number;
+  uDiscDopplerMaxBeta: number;
   uEnvExposure: number;
 };
 
@@ -74,6 +76,8 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uDiscSpinMaxOmega: bendDefaults.uDiscSpinMaxOmega,
     uDiscAdvectionCycleSeconds: bendDefaults.uDiscAdvectionCycleSeconds,
     uDiscAdvectionBlendFraction: bendDefaults.uDiscAdvectionBlendFraction,
+    uDiscDopplerStrength: bendDefaults.uDiscDopplerStrength,
+    uDiscDopplerMaxBeta: bendDefaults.uDiscDopplerMaxBeta,
     uEnvExposure: 1.0,
   };
 }

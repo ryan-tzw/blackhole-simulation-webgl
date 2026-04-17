@@ -2,6 +2,8 @@ const int MAX_SPAN_SAMPLES = 32;
 const float DISC_EMISSION_GAIN_FLOOR = 0.08;
 const float DISC_SPIN_EXPONENT = -1.5;
 const float DISC_MIN_CYCLE_SECONDS = 0.05;
+const float DISC_MAX_BEAMING = 12.0;
+const float DISC_MIN_BEAMING = 0.12;
 
 // Maps quality slider (1..3) to a base substep count per span.
 int discBaseSamplesFromQuality() {
@@ -52,6 +54,35 @@ float discSpinOmega(vec3 p) {
   float r = max(length(p.xz), rRef);
   float omegaKepler = spinSpeed * pow(max(r / rRef, ACCRETION_EPS), DISC_SPIN_EXPONENT);
   return min(omegaKepler, maxOmega);
+}
+
+// Computes relativistic Doppler/beaming gain from local orbital flow and view direction.
+float discDopplerBeamingGain(vec3 p, vec3 rayDir) {
+  float strength = max(uDiscDopplerStrength, 0.0);
+  if (strength <= ACCRETION_EPS) {
+    return 1.0;
+  }
+
+  float r = length(p.xz);
+  if (r <= ACCRETION_EPS) {
+    return 1.0;
+  }
+
+  float omega = discSpinOmega(p);
+  float maxBeta = clamp(uDiscDopplerMaxBeta, 0.0, 0.99);
+  float beta = min(omega * r, maxBeta);
+  if (beta <= ACCRETION_EPS) {
+    return 1.0;
+  }
+
+  vec3 flowDir = vec3(-p.z / r, 0.0, p.x / r);
+  vec3 velocity = flowDir * beta;
+  vec3 toObserver = -rayDir;
+
+  float gamma = inversesqrt(max(1.0 - beta * beta, ACCRETION_EPS));
+  float dopplerFactor = 1.0 / max(gamma * (1.0 - dot(velocity, toObserver)), ACCRETION_EPS);
+  float beaming = clamp(dopplerFactor * dopplerFactor * dopplerFactor, DISC_MIN_BEAMING, DISC_MAX_BEAMING);
+  return pow(beaming, strength);
 }
 
 // sample disc noise via two phase leapfrog advection with windowed cross-fades
@@ -190,6 +221,10 @@ void averageDiscOpticsOnSpan(
     emissionRadialPower,
     emissionColorCurve
   );
+  vec3 segmentDir = p1 - p0;
+  float segmentDirLen = length(segmentDir);
+  vec3 rayDir =
+    segmentDirLen > ACCRETION_EPS ? (segmentDir / segmentDirLen) : vec3(0.0, 0.0, 1.0);
 
   for (int i = 0; i < MAX_SPAN_SAMPLES; i++) {
     if (i >= samples) {
@@ -210,6 +245,7 @@ void averageDiscOpticsOnSpan(
       localEmissionGain,
       localEmissionTint
     );
+    localEmissionGain *= discDopplerBeamingGain(p, rayDir);
     accumulateWeightedDiscOpticsSample(
       localDensity,
       localEmissionGain,

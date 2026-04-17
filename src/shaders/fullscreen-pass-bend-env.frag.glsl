@@ -42,6 +42,8 @@ uniform float uDiscSpinSpeed;
 uniform float uDiscSpinMaxOmega;
 uniform float uDiscAdvectionCycleSeconds;
 uniform float uDiscAdvectionBlendFraction;
+uniform float uDiscDopplerStrength;
+uniform float uDiscDopplerMaxBeta;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;

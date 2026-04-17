@@ -62,6 +62,8 @@ export function RenderingRoot() {
     uDiscSpinMaxOmega,
     uDiscAdvectionCycleSeconds,
     uDiscAdvectionBlendFraction,
+    uDiscDopplerStrength,
+    uDiscDopplerMaxBeta,
     uEnvExposure,
   } = useControls({
     passMode: {
@@ -256,6 +258,18 @@ export function RenderingRoot() {
           max: 0.49,
           step: 0.01,
         },
+        uDiscDopplerStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDopplerStrength,
+          min: 0.0,
+          max: 2.0,
+          step: 0.01,
+        },
+        uDiscDopplerMaxBeta: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDopplerMaxBeta,
+          min: 0.01,
+          max: 0.99,
+          step: 0.01,
+        },
       }),
     }),
     Environment: folder({
@@ -309,6 +323,8 @@ export function RenderingRoot() {
     uDiscSpinMaxOmega,
     uDiscAdvectionCycleSeconds,
     uDiscAdvectionBlendFraction,
+    uDiscDopplerStrength,
+    uDiscDopplerMaxBeta,
     uEnvExposure,
   };
 

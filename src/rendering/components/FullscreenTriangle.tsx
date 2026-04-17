@@ -123,6 +123,8 @@ export function FullscreenTriangle({
         bendSettings.uDiscAdvectionCycleSeconds;
       material.uDiscAdvectionBlendFraction =
         bendSettings.uDiscAdvectionBlendFraction;
+      material.uDiscDopplerStrength = bendSettings.uDiscDopplerStrength;
+      material.uDiscDopplerMaxBeta = bendSettings.uDiscDopplerMaxBeta;
     };
 
     updateMaterial(debugMaterialRef.current);
