@@ -67,7 +67,7 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscEmissionRadialPower: 2.0,
     uDiscEmissionColorCurve: 0.15,
     uDiscInnerSoftness: 2.5,
-    uDiscOuterSoftness: 3.9,
+    uDiscOuterSoftness: 0.01,
     uDiscVerticalFalloffPower: 4.0,
     uDiscIntegrationQuality: 2.0,
     uDiscNoiseTex: getSharedDiscNoiseTexture(),
