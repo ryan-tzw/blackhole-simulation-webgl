@@ -2,15 +2,15 @@ import type { RefObject } from "react";
 import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
-import type { BendRenderSettings } from "../config/bend-render-settings";
-import type { ObserverCameraState } from "../camera/camera-state";
-import { FullscreenPassBendEnvMaterial } from "../materials/FullscreenPassBendEnvMaterial";
-import { FullscreenPassBendDebugMaterial } from "../materials/FullscreenPassBendDebugMaterial";
-import { FullscreenPassMaterial } from "../materials/FullscreenPassMaterial";
-import { FullscreenPassMarchMaterial } from "../materials/FullscreenPassMarchMaterial";
-import type { BendUniformDefaults } from "../materials/bend-uniforms";
-import type { ObserverCameraUniformDefaults } from "../materials/observer-camera-uniforms";
-import type { PassShaderMode } from "../config/pass-shader-mode";
+import type { ObserverCameraState } from "@/rendering/camera/camera-state";
+import type { BendRenderSettings } from "@/rendering/config/bend-render-settings";
+import type { PassShaderMode } from "@/rendering/config/pass-shader-mode";
+import { FullscreenPassBendEnvMaterial } from "@/rendering/materials/FullscreenPassBendEnvMaterial";
+import { FullscreenPassBendDebugMaterial } from "@/rendering/materials/FullscreenPassBendDebugMaterial";
+import { FullscreenPassMaterial } from "@/rendering/materials/FullscreenPassMaterial";
+import { FullscreenPassMarchMaterial } from "@/rendering/materials/FullscreenPassMarchMaterial";
+import type { BendUniformDefaults } from "@/rendering/materials/bend-uniforms";
+import type { ObserverCameraUniformDefaults } from "@/rendering/materials/observer-camera-uniforms";
 
 type FullscreenTriangleProps = {
   bendSettings: BendRenderSettings;

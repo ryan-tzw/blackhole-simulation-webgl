@@ -4,17 +4,17 @@ import { Color } from "three";
 import {
   createBendRenderSettingsDefaults,
   type BendRenderSettings,
-} from "../config/bend-render-settings";
+} from "@/rendering/config/bend-render-settings";
 import {
   DEFAULT_OBSERVER_CAMERA_STATE,
   type ObserverCameraState,
-} from "../camera/camera-state";
+} from "@/rendering/camera/camera-state";
 import { DebugInsetCanvas } from "./DebugInsetCanvas";
 import { FullscreenPassCanvas } from "./FullscreenPassCanvas";
 import {
   PASS_SHADER_MODES,
   type PassShaderMode,
-} from "../config/pass-shader-mode";
+} from "@/rendering/config/pass-shader-mode";
 import { StartupLoadingOverlay } from "./StartupLoadingOverlay";
 import "./rendering-root.css";
 

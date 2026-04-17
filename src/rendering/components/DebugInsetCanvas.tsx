@@ -1,5 +1,5 @@
 import { useCallback, useState, type RefObject } from "react";
-import type { ObserverCameraState } from "../camera/camera-state";
+import type { ObserverCameraState } from "@/rendering/camera/camera-state";
 import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas";
 
 type DebugInsetCanvasProps = {
