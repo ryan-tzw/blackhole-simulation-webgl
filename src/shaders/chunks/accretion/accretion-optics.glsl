@@ -4,6 +4,8 @@ const float DISC_SPIN_EXPONENT = -1.5;
 const float DISC_MIN_CYCLE_SECONDS = 0.05;
 const float DISC_MAX_BEAMING = 12.0;
 const float DISC_MIN_BEAMING = 0.12;
+const vec3 DISC_DOPPLER_BLUE_TINT = vec3(0.92, 0.98, 1.10);
+const vec3 DISC_DOPPLER_RED_TINT = vec3(1.10, 0.94, 0.88);
 
 // Maps quality slider (1..3) to a base substep count per span.
 int discBaseSamplesFromQuality() {
@@ -56,23 +58,31 @@ float discSpinOmega(vec3 p) {
   return min(omegaKepler, maxOmega);
 }
 
-// Computes relativistic Doppler/beaming gain from local orbital flow and view direction.
-float discDopplerBeamingGain(vec3 p, vec3 rayDir) {
+// Computes relativistic Doppler beaming and a simple RGB warm/cool shift.
+void discDopplerModulation(
+  vec3 p,
+  vec3 rayDir,
+  out float beamingGain,
+  out vec3 dopplerTint
+) {
+  beamingGain = 1.0;
+  dopplerTint = vec3(1.0);
+
   float strength = max(uDiscDopplerStrength, 0.0);
   if (strength <= ACCRETION_EPS) {
-    return 1.0;
+    return;
   }
 
   float r = length(p.xz);
   if (r <= ACCRETION_EPS) {
-    return 1.0;
+    return;
   }
 
   float omega = discSpinOmega(p);
   float maxBeta = clamp(uDiscDopplerMaxBeta, 0.0, 0.99);
   float beta = min(omega * r, maxBeta);
   if (beta <= ACCRETION_EPS) {
-    return 1.0;
+    return;
   }
 
   vec3 flowDir = vec3(-p.z / r, 0.0, p.x / r);
@@ -82,7 +92,12 @@ float discDopplerBeamingGain(vec3 p, vec3 rayDir) {
   float gamma = inversesqrt(max(1.0 - beta * beta, ACCRETION_EPS));
   float dopplerFactor = 1.0 / max(gamma * (1.0 - dot(velocity, toObserver)), ACCRETION_EPS);
   float beaming = clamp(dopplerFactor * dopplerFactor * dopplerFactor, DISC_MIN_BEAMING, DISC_MAX_BEAMING);
-  return pow(beaming, strength);
+  beamingGain = pow(beaming, strength);
+
+  float signedShift = clamp(log2(dopplerFactor), -1.0, 1.0);
+  float tintAmount = clamp(abs(signedShift) * 0.75 * strength, 0.0, 1.0);
+  vec3 targetTint = signedShift >= 0.0 ? DISC_DOPPLER_BLUE_TINT : DISC_DOPPLER_RED_TINT;
+  dopplerTint = mix(vec3(1.0), targetTint, tintAmount);
 }
 
 // sample disc noise via two phase leapfrog advection with windowed cross-fades
@@ -245,7 +260,11 @@ void averageDiscOpticsOnSpan(
       localEmissionGain,
       localEmissionTint
     );
-    localEmissionGain *= discDopplerBeamingGain(p, rayDir);
+    float dopplerGain = 1.0;
+    vec3 dopplerTint = vec3(1.0);
+    discDopplerModulation(p, rayDir, dopplerGain, dopplerTint);
+    localEmissionGain *= dopplerGain;
+    localEmissionTint *= dopplerTint;
     accumulateWeightedDiscOpticsSample(
       localDensity,
       localEmissionGain,
