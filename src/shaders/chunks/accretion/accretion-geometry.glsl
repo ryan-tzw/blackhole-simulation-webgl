@@ -47,6 +47,7 @@ bool cylinderInsideInterval(
   return intervalEnd > intervalStart;
 }
 
+// Clips segment interval against disc height slab |y| <= uDiscHalfHeight.
 bool clipYSlabInterval(vec3 p0, vec3 d, inout float tEnter, inout float tExit) {
   if (abs(d.y) < ACCRETION_EPS) {
     return abs(p0.y) <= uDiscHalfHeight;
@@ -61,6 +62,7 @@ bool clipYSlabInterval(vec3 p0, vec3 d, inout float tEnter, inout float tExit) {
   return tEnter < tExit;
 }
 
+// Clips current interval against outer disc radius in the XZ plane.
 bool clipOuterCylinderInterval(
   vec3 p0,
   vec3 d,
@@ -73,6 +75,7 @@ bool clipOuterCylinderInterval(
   return cylinderInsideInterval(p0, d, outerRadius, tEnter, tExit, outerStart, outerEnd);
 }
 
+// Subtracts inner hole from outer span, producing up to two annulus segments.
 void annulusSegmentsFromOuter(
   vec3 p0,
   vec3 d,

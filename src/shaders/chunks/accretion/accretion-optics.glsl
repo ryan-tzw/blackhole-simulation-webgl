@@ -1,6 +1,7 @@
 const int MAX_SPAN_SAMPLES = 32;
 const float DISC_EMISSION_GAIN_FLOOR = 0.08;
 
+// Maps quality slider (1..3) to a base substep count per span.
 int discBaseSamplesFromQuality() {
   int quality = int(clamp(floor(uDiscIntegrationQuality + 0.5), 1.0, 3.0));
   if (quality <= 1) {
@@ -12,6 +13,7 @@ int discBaseSamplesFromQuality() {
   return 16;
 }
 
+// Adapts span sample count using vertical travel to reduce under-sampling bands.
 int discAdaptiveSpanSamples(vec3 p0, vec3 p1, float t0, float t1) {
   float tSpan = max(t1 - t0, 0.0);
   if (tSpan <= ACCRETION_EPS) {
@@ -29,6 +31,7 @@ int discAdaptiveSpanSamples(vec3 p0, vec3 p1, float t0, float t1) {
   return clamp(n, 1, MAX_SPAN_SAMPLES);
 }
 
+// Samples local density from disc profile multiplied by 3D noise modulation.
 float discLocalDensitySample(vec3 p) {
   float baseDensity = discDensityFactor(p);
   vec3 noiseUv = fract(p * uDiscNoiseScale);
@@ -37,6 +40,7 @@ float discLocalDensitySample(vec3 p) {
   return baseDensity * noiseMod;
 }
 
+// Precomputes stable radial-emission parameters used for per-substep evaluation.
 void discRadialEmissionParams(
   out float innerRadius,
   out float radialSpan,
@@ -50,6 +54,7 @@ void discRadialEmissionParams(
   emissionColorCurve = max(uDiscEmissionColorCurve, 0.0);
 }
 
+// Computes local emission gain and tint from normalized radial position.
 void discLocalEmissionProfile(
   vec3 p,
   float innerRadius,
@@ -79,6 +84,7 @@ void discLocalEmissionProfile(
   );
 }
 
+// Accumulates density-weighted sums used to build span-averaged optics.
 void accumulateWeightedDiscOpticsSample(
   float localDensity,
   float localEmissionGain,
@@ -92,6 +98,7 @@ void accumulateWeightedDiscOpticsSample(
   emissionTintWeightedSum += localDensity * localEmissionTint;
 }
 
+// Averages density and radial emission terms over one clipped disc span.
 void averageDiscOpticsOnSpan(
   vec3 p0,
   vec3 p1,
@@ -163,6 +170,7 @@ void averageDiscOpticsOnSpan(
   }
 }
 
+// Applies Beer-Lambert absorption + emission for one span-averaged medium segment.
 void accumulateBeerLambertForDensity(
   float dsInside, // world-space length inside medium for this span
   float rho,      // effective average density for this span
@@ -196,6 +204,7 @@ void accumulateBeerLambertForDensity(
   mediumTransmittance = transmittanceBefore * stepTransmittance;
 }
 
+// Integrates one clipped annulus span and composites it front-to-back.
 void accumulateBeerLambertSpan(
   vec3 p0,
   vec3 p1,
