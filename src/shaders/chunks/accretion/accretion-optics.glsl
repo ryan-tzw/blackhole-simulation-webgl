@@ -33,12 +33,14 @@ int discAdaptiveSpanSamples(vec3 p0, vec3 p1, float t0, float t1) {
   return clamp(n, 1, MAX_SPAN_SAMPLES);
 }
 
+// rotate xz coord around y by angle (radians)
 vec2 rotateXZ(vec2 xz, float angle) {
   float c = cos(angle);
   float s = sin(angle);
   return vec2(c * xz.x - s * xz.y, s * xz.x + c * xz.y);
 }
 
+// compute local orbital angular speed
 float discSpinOmega(vec3 p) {
   float spinSpeed = max(uDiscSpinSpeed, 0.0);
   float maxOmega = max(uDiscSpinMaxOmega, 0.0);
@@ -52,6 +54,7 @@ float discSpinOmega(vec3 p) {
   return min(omegaKepler, maxOmega);
 }
 
+// sample disc noise via two phase leapfrog advection with windowed cross-fades
 float sampleDiscNoiseLeapfrog(vec3 p) {
   float cycle = max(uDiscAdvectionCycleSeconds, DISC_MIN_CYCLE_SECONDS);
   float blendFrac = clamp(uDiscAdvectionBlendFraction, 0.0, 0.49);
