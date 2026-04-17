@@ -1,4 +1,4 @@
-import { createBendUniformDefaults } from "./materials/bend-uniforms";
+import { createBendUniformDefaults } from "../materials/bend-uniforms";
 
 export type BendRenderSettings = {
   uRs: number;

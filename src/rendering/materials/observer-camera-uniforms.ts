@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { DEFAULT_OBSERVER_CAMERA_STATE } from "@/rendering/camera-state";
+import { DEFAULT_OBSERVER_CAMERA_STATE } from "@/rendering/camera/camera-state";
 
 export type ObserverCameraUniformDefaults = {
   uCameraPos: Vector3;

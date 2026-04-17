@@ -1,5 +1,5 @@
 import { Leva } from "leva";
-import { RenderingRoot } from "./rendering/RenderingRoot";
+import { RenderingRoot } from "./rendering/components/RenderingRoot";
 
 export function App() {
   return (

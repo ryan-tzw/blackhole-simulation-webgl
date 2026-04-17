@@ -1,11 +1,11 @@
 import type { RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import type { ObserverCameraState } from "./camera-state";
-import type { BendRenderSettings } from "./bend-render-settings";
+import type { ObserverCameraState } from "../camera/camera-state";
+import type { BendRenderSettings } from "../config/bend-render-settings";
 import { FullscreenTriangle } from "./FullscreenTriangle";
-import { ObserverCameraController } from "./ObserverCameraController";
-import type { PassShaderMode } from "./pass-shader-mode";
-import { FXAAPostProcess } from "./postprocessing/FXAAPostProcess";
+import { ObserverCameraController } from "../camera/ObserverCameraController";
+import type { PassShaderMode } from "../config/pass-shader-mode";
+import { FXAAPostProcess } from "../postprocessing/FXAAPostProcess";
 import { Perf } from "r3f-perf";
 import { FirstFrameSignal } from "./FirstFrameSignal";
 

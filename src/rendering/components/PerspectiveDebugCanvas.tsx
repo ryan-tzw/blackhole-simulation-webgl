@@ -9,7 +9,7 @@ import {
 import {
   OBSERVER_CAMERA_DEFAULTS,
   type ObserverCameraState,
-} from "./camera-state";
+} from "../camera/camera-state";
 import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
 import { FirstFrameSignal } from "./FirstFrameSignal";
 
