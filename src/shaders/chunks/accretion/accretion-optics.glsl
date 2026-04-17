@@ -4,8 +4,8 @@ const float DISC_SPIN_EXPONENT = -1.5;
 const float DISC_MIN_CYCLE_SECONDS = 0.05;
 const float DISC_MAX_BEAMING = 12.0;
 const float DISC_MIN_BEAMING = 0.12;
-const vec3 DISC_DOPPLER_BLUE_TINT = vec3(0.92, 0.98, 1.10);
-const vec3 DISC_DOPPLER_RED_TINT = vec3(1.10, 0.94, 0.88);
+const vec3 DISC_DOPPLER_BLUE_TINT = vec3(0.78, 0.90, 1.28);
+const vec3 DISC_DOPPLER_RED_TINT = vec3(1.28, 0.84, 0.74);
 
 // Maps quality slider (1..3) to a base substep count per span.
 int discBaseSamplesFromQuality() {
@@ -68,8 +68,9 @@ void discDopplerModulation(
   beamingGain = 1.0;
   dopplerTint = vec3(1.0);
 
-  float strength = max(uDiscDopplerStrength, 0.0);
-  if (strength <= ACCRETION_EPS) {
+  float beamingStrength = max(uDiscDopplerStrength, 0.0);
+  float tintStrength = max(uDiscDopplerTintStrength, 0.0);
+  if (beamingStrength <= ACCRETION_EPS && tintStrength <= ACCRETION_EPS) {
     return;
   }
 
@@ -92,12 +93,16 @@ void discDopplerModulation(
   float gamma = inversesqrt(max(1.0 - beta * beta, ACCRETION_EPS));
   float dopplerFactor = 1.0 / max(gamma * (1.0 - dot(velocity, toObserver)), ACCRETION_EPS);
   float beaming = clamp(dopplerFactor * dopplerFactor * dopplerFactor, DISC_MIN_BEAMING, DISC_MAX_BEAMING);
-  beamingGain = pow(beaming, strength);
+  if (beamingStrength > ACCRETION_EPS) {
+    beamingGain = pow(beaming, beamingStrength);
+  }
 
   float signedShift = clamp(log2(dopplerFactor), -1.0, 1.0);
-  float tintAmount = clamp(abs(signedShift) * 0.75 * strength, 0.0, 1.0);
-  vec3 targetTint = signedShift >= 0.0 ? DISC_DOPPLER_BLUE_TINT : DISC_DOPPLER_RED_TINT;
-  dopplerTint = mix(vec3(1.0), targetTint, tintAmount);
+  if (tintStrength > ACCRETION_EPS) {
+    float tintAmount = clamp(abs(signedShift) * tintStrength, 0.0, 1.0);
+    vec3 targetTint = signedShift >= 0.0 ? DISC_DOPPLER_BLUE_TINT : DISC_DOPPLER_RED_TINT;
+    dopplerTint = mix(vec3(1.0), targetTint, tintAmount);
+  }
 }
 
 // sample disc noise via two phase leapfrog advection with windowed cross-fades

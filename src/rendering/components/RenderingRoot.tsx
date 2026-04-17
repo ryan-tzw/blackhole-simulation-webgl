@@ -63,6 +63,7 @@ export function RenderingRoot() {
     uDiscAdvectionCycleSeconds,
     uDiscAdvectionBlendFraction,
     uDiscDopplerStrength,
+    uDiscDopplerTintStrength,
     uDiscDopplerMaxBeta,
     uEnvExposure,
   } = useControls({
@@ -264,6 +265,12 @@ export function RenderingRoot() {
           max: 2.0,
           step: 0.01,
         },
+        uDiscDopplerTintStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDopplerTintStrength,
+          min: 0.0,
+          max: 6.0,
+          step: 0.05,
+        },
         uDiscDopplerMaxBeta: {
           value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDopplerMaxBeta,
           min: 0.01,
@@ -324,6 +331,7 @@ export function RenderingRoot() {
     uDiscAdvectionCycleSeconds,
     uDiscAdvectionBlendFraction,
     uDiscDopplerStrength,
+    uDiscDopplerTintStrength,
     uDiscDopplerMaxBeta,
     uEnvExposure,
   };

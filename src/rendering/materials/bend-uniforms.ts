@@ -36,6 +36,7 @@ export type BendUniformDefaults = {
   uDiscAdvectionCycleSeconds: number;
   uDiscAdvectionBlendFraction: number;
   uDiscDopplerStrength: number;
+  uDiscDopplerTintStrength: number;
   uDiscDopplerMaxBeta: number;
   uCaptureColor: Vector3;
   uMaxIterColor: Vector3;
@@ -80,6 +81,7 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscAdvectionCycleSeconds: 5.0,
     uDiscAdvectionBlendFraction: 0.49,
     uDiscDopplerStrength: 1.0,
+    uDiscDopplerTintStrength: 2.0,
     uDiscDopplerMaxBeta: 0.35,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
