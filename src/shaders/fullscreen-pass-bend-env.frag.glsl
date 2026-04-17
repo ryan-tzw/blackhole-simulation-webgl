@@ -6,6 +6,7 @@ uniform vec3 uCameraUp;
 uniform vec3 uCameraForward;
 uniform float uFovY;
 uniform float uAspect;
+uniform float uTime;
 
 uniform float uRs;
 uniform float uMaxSteps;
@@ -37,6 +38,10 @@ uniform float uDiscIntegrationQuality;
 uniform sampler3D uDiscNoiseTex;
 uniform float uDiscNoiseScale;
 uniform float uDiscNoiseStrength;
+uniform float uDiscSpinSpeed;
+uniform float uDiscSpinMaxOmega;
+uniform float uDiscAdvectionCycleSeconds;
+uniform float uDiscAdvectionBlendFraction;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;

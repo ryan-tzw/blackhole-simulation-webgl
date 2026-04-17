@@ -61,7 +61,8 @@ export function FullscreenTriangle({
   const bendEnvMaterialRef =
     useRef<FullscreenPassBendEnvMaterialInstance | null>(null);
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
+    const elapsedTime = clock.getElapsedTime();
     const cameraState = observerCameraStateRef.current;
     const passAspect =
       size.height > 0 ? size.width / size.height : cameraState.aspect;
@@ -84,6 +85,7 @@ export function FullscreenTriangle({
       }
 
       updateMaterial(material);
+      material.uTime = elapsedTime;
       material.uRs = bendSettings.uRs;
       material.uMaxSteps = bendSettings.uMaxSteps;
       material.uStepAdapt = bendSettings.uStepAdapt;
@@ -115,6 +117,12 @@ export function FullscreenTriangle({
       material.uDiscIntegrationQuality = bendSettings.uDiscIntegrationQuality;
       material.uDiscNoiseScale = bendSettings.uDiscNoiseScale;
       material.uDiscNoiseStrength = bendSettings.uDiscNoiseStrength;
+      material.uDiscSpinSpeed = bendSettings.uDiscSpinSpeed;
+      material.uDiscSpinMaxOmega = bendSettings.uDiscSpinMaxOmega;
+      material.uDiscAdvectionCycleSeconds =
+        bendSettings.uDiscAdvectionCycleSeconds;
+      material.uDiscAdvectionBlendFraction =
+        bendSettings.uDiscAdvectionBlendFraction;
     };
 
     updateMaterial(debugMaterialRef.current);

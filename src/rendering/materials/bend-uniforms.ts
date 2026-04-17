@@ -2,6 +2,7 @@ import { Data3DTexture, Vector3 } from "three";
 import { getSharedDiscNoiseTexture } from "@/rendering/environment/disc-noise-texture";
 
 export type BendUniformDefaults = {
+  uTime: number;
   uRs: number;
   uMaxSteps: number;
   uStepAdapt: number;
@@ -30,6 +31,10 @@ export type BendUniformDefaults = {
   uDiscNoiseTex: Data3DTexture;
   uDiscNoiseScale: number;
   uDiscNoiseStrength: number;
+  uDiscSpinSpeed: number;
+  uDiscSpinMaxOmega: number;
+  uDiscAdvectionCycleSeconds: number;
+  uDiscAdvectionBlendFraction: number;
   uCaptureColor: Vector3;
   uMaxIterColor: Vector3;
 };
@@ -39,6 +44,7 @@ export function createBendUniformDefaults(): BendUniformDefaults {
   const PI = 3.14159265359;
 
   return {
+    uTime: 0.0,
     uRs: 1.0,
     uMaxSteps: 100.0,
     uStepAdapt: 0.1,
@@ -52,14 +58,14 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscInnerRadius: 3.0,
     uDiscOuterRadius: 12.0,
     uDiscHalfHeight: 0.35,
-    uDiscDensity: 1.0,
+    uDiscDensity: 5.0,
     uDiscDensityRadialPower: 1.5,
     uDiscAbsorption: 1.2,
     uDiscEmissionStrength: 6.0,
-    uDiscEmissionInnerColor: new Vector3(1.0, 0.95, 0.88),
-    uDiscEmissionOuterColor: new Vector3(1.0, 0.6, 0.28),
+    uDiscEmissionInnerColor: new Vector3(0.949, 0.431, 0.173),
+    uDiscEmissionOuterColor: new Vector3(0.922, 0.686, 0.686),
     uDiscEmissionRadialPower: 2.0,
-    uDiscEmissionColorCurve: 2.5,
+    uDiscEmissionColorCurve: 0.15,
     uDiscInnerSoftness: 2.5,
     uDiscOuterSoftness: 3.9,
     uDiscVerticalFalloffPower: 4.0,
@@ -67,6 +73,10 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscNoiseTex: getSharedDiscNoiseTexture(),
     uDiscNoiseScale: 0.06,
     uDiscNoiseStrength: 1.0,
+    uDiscSpinSpeed: 2.0,
+    uDiscSpinMaxOmega: 10.0,
+    uDiscAdvectionCycleSeconds: 5.0,
+    uDiscAdvectionBlendFraction: 0.49,
     uCaptureColor: new Vector3(0.0, 0.0, 0.0),
     uMaxIterColor: new Vector3(1.0, 0.55, 0.1),
   };

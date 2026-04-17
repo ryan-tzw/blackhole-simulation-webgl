@@ -58,6 +58,10 @@ export function RenderingRoot() {
     uDiscIntegrationQuality,
     uDiscNoiseScale,
     uDiscNoiseStrength,
+    uDiscSpinSpeed,
+    uDiscSpinMaxOmega,
+    uDiscAdvectionCycleSeconds,
+    uDiscAdvectionBlendFraction,
     uEnvExposure,
   } = useControls({
     passMode: {
@@ -141,7 +145,7 @@ export function RenderingRoot() {
         uDiscDensity: {
           value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensity,
           min: 0.0,
-          max: 5.0,
+          max: 10.0,
           step: 0.05,
         },
         uDiscDensityRadialPower: {
@@ -201,8 +205,8 @@ export function RenderingRoot() {
         uDiscEmissionColorCurve: {
           value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColorCurve,
           min: 0.0,
-          max: 8.0,
-          step: 0.05,
+          max: 2.0,
+          step: 0.01,
         },
       }),
       Integration: folder({
@@ -224,6 +228,32 @@ export function RenderingRoot() {
           value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseStrength,
           min: 0.0,
           max: 2.0,
+          step: 0.01,
+        },
+      }),
+      Motion: folder({
+        uDiscSpinSpeed: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscSpinSpeed,
+          min: 0.0,
+          max: 8.0,
+          step: 0.1,
+        },
+        uDiscSpinMaxOmega: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscSpinMaxOmega,
+          min: 0.0,
+          max: 40.0,
+          step: 0.1,
+        },
+        uDiscAdvectionCycleSeconds: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscAdvectionCycleSeconds,
+          min: 2.0,
+          max: 8.0,
+          step: 0.01,
+        },
+        uDiscAdvectionBlendFraction: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscAdvectionBlendFraction,
+          min: 0.01,
+          max: 0.49,
           step: 0.01,
         },
       }),
@@ -275,6 +305,10 @@ export function RenderingRoot() {
     uDiscIntegrationQuality,
     uDiscNoiseScale,
     uDiscNoiseStrength,
+    uDiscSpinSpeed,
+    uDiscSpinMaxOmega,
+    uDiscAdvectionCycleSeconds,
+    uDiscAdvectionBlendFraction,
     uEnvExposure,
   };
 

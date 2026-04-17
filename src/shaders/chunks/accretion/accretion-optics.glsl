@@ -1,5 +1,7 @@
 const int MAX_SPAN_SAMPLES = 32;
 const float DISC_EMISSION_GAIN_FLOOR = 0.08;
+const float DISC_SPIN_EXPONENT = -1.5;
+const float DISC_MIN_CYCLE_SECONDS = 0.05;
 
 // Maps quality slider (1..3) to a base substep count per span.
 int discBaseSamplesFromQuality() {
@@ -31,11 +33,64 @@ int discAdaptiveSpanSamples(vec3 p0, vec3 p1, float t0, float t1) {
   return clamp(n, 1, MAX_SPAN_SAMPLES);
 }
 
-// Samples local density from disc profile multiplied by 3D noise modulation.
+vec2 rotateXZ(vec2 xz, float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  return vec2(c * xz.x - s * xz.y, s * xz.x + c * xz.y);
+}
+
+float discSpinOmega(vec3 p) {
+  float spinSpeed = max(uDiscSpinSpeed, 0.0);
+  float maxOmega = max(uDiscSpinMaxOmega, 0.0);
+  if (spinSpeed <= ACCRETION_EPS || maxOmega <= ACCRETION_EPS) {
+    return 0.0;
+  }
+
+  float rRef = max(uDiscInnerRadius, ACCRETION_EPS);
+  float r = max(length(p.xz), rRef);
+  float omegaKepler = spinSpeed * pow(max(r / rRef, ACCRETION_EPS), DISC_SPIN_EXPONENT);
+  return min(omegaKepler, maxOmega);
+}
+
+float sampleDiscNoiseLeapfrog(vec3 p) {
+  float cycle = max(uDiscAdvectionCycleSeconds, DISC_MIN_CYCLE_SECONDS);
+  float blendFrac = clamp(uDiscAdvectionBlendFraction, 0.0, 0.49);
+  float phase = fract(uTime / cycle);
+  float omega = discSpinOmega(p);
+
+  float ageA = phase * cycle;
+  float ageB = fract(phase + 0.5) * cycle;
+
+  vec3 pA = vec3(rotateXZ(p.xz, -omega * ageA), p.y);
+  vec3 pB = vec3(rotateXZ(p.xz, -omega * ageB), p.y);
+  float noiseA = texture(uDiscNoiseTex, fract(pA * uDiscNoiseScale)).r;
+  float noiseB = texture(uDiscNoiseTex, fract(pB * uDiscNoiseScale)).r;
+
+  if (blendFrac <= ACCRETION_EPS) {
+    return phase < 0.5 ? noiseB : noiseA;
+  }
+
+  float firstBlendStart = 0.5 - blendFrac;
+  float secondBlendStart = 1.0 - blendFrac;
+  if (phase < firstBlendStart) {
+    return noiseB;
+  }
+  if (phase < 0.5) {
+    float t = smoothstep(firstBlendStart, 0.5, phase);
+    return mix(noiseB, noiseA, t);
+  }
+  if (phase < secondBlendStart) {
+    return noiseA;
+  }
+
+  float t = smoothstep(secondBlendStart, 1.0, phase);
+  return mix(noiseA, noiseB, t);
+}
+
+// Samples local density from disc profile multiplied by leapfrog-advected noise.
 float discLocalDensitySample(vec3 p) {
   float baseDensity = discDensityFactor(p);
-  vec3 noiseUv = fract(p * uDiscNoiseScale);
-  float noiseValue = texture(uDiscNoiseTex, noiseUv).r;
+  float noiseValue = sampleDiscNoiseLeapfrog(p);
   float noiseMod = mix(1.0, noiseValue, uDiscNoiseStrength);
   return baseDensity * noiseMod;
 }

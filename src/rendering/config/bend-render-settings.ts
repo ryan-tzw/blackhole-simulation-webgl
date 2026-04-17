@@ -26,6 +26,10 @@ export type BendRenderSettings = {
   uDiscIntegrationQuality: number;
   uDiscNoiseScale: number;
   uDiscNoiseStrength: number;
+  uDiscSpinSpeed: number;
+  uDiscSpinMaxOmega: number;
+  uDiscAdvectionCycleSeconds: number;
+  uDiscAdvectionBlendFraction: number;
   uEnvExposure: number;
 };
 
@@ -66,6 +70,10 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uDiscIntegrationQuality: bendDefaults.uDiscIntegrationQuality,
     uDiscNoiseScale: bendDefaults.uDiscNoiseScale,
     uDiscNoiseStrength: bendDefaults.uDiscNoiseStrength,
+    uDiscSpinSpeed: bendDefaults.uDiscSpinSpeed,
+    uDiscSpinMaxOmega: bendDefaults.uDiscSpinMaxOmega,
+    uDiscAdvectionCycleSeconds: bendDefaults.uDiscAdvectionCycleSeconds,
+    uDiscAdvectionBlendFraction: bendDefaults.uDiscAdvectionBlendFraction,
     uEnvExposure: 1.0,
   };
 }
