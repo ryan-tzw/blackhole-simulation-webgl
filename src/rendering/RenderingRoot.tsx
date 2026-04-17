@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { folder, useControls } from "leva";
+import { Color } from "three";
 import {
   createBendRenderSettingsDefaults,
   type BendRenderSettings,
@@ -15,6 +16,10 @@ import { StartupLoadingOverlay } from "./StartupLoadingOverlay";
 import "./rendering-root.css";
 
 const DEFAULT_BEND_RENDER_SETTINGS = createBendRenderSettingsDefaults();
+
+function colorArrayToHex(color: [number, number, number]): string {
+  return `#${new Color(color[0], color[1], color[2]).getHexString()}`;
+}
 
 export function RenderingRoot() {
   const observerCameraStateRef = useRef<ObserverCameraState>(
@@ -39,6 +44,10 @@ export function RenderingRoot() {
     uDiscDensity,
     uDiscAbsorption,
     uDiscEmissionStrength,
+    uDiscEmissionInnerColor,
+    uDiscEmissionOuterColor,
+    uDiscEmissionRadialPower,
+    uDiscEmissionColorCurve,
     uDiscInnerSoftness,
     uDiscOuterSoftness,
     uDiscVerticalFalloffPower,
@@ -140,6 +149,28 @@ export function RenderingRoot() {
       uDiscEmissionStrength: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionStrength,
         min: 0.0,
+        max: 15.0,
+        step: 0.05,
+      },
+      uDiscEmissionInnerColor: {
+        value: colorArrayToHex(
+          DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionInnerColor,
+        ),
+      },
+      uDiscEmissionOuterColor: {
+        value: colorArrayToHex(
+          DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionOuterColor,
+        ),
+      },
+      uDiscEmissionRadialPower: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionRadialPower,
+        min: 0.0,
+        max: 8.0,
+        step: 0.05,
+      },
+      uDiscEmissionColorCurve: {
+        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColorCurve,
+        min: 0.0,
         max: 8.0,
         step: 0.05,
       },
@@ -207,6 +238,10 @@ export function RenderingRoot() {
       },
     }),
   });
+
+  const discEmissionInnerColor = new Color(uDiscEmissionInnerColor);
+  const discEmissionOuterColor = new Color(uDiscEmissionOuterColor);
+
   const bendSettings: BendRenderSettings = {
     uRs,
     uMaxSteps,
@@ -222,6 +257,18 @@ export function RenderingRoot() {
     uDiscDensity,
     uDiscAbsorption,
     uDiscEmissionStrength,
+    uDiscEmissionInnerColor: [
+      discEmissionInnerColor.r,
+      discEmissionInnerColor.g,
+      discEmissionInnerColor.b,
+    ],
+    uDiscEmissionOuterColor: [
+      discEmissionOuterColor.r,
+      discEmissionOuterColor.g,
+      discEmissionOuterColor.b,
+    ],
+    uDiscEmissionRadialPower,
+    uDiscEmissionColorCurve,
     uDiscInnerSoftness,
     uDiscOuterSoftness,
     uDiscVerticalFalloffPower,

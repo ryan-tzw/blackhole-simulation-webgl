@@ -19,6 +19,10 @@ export type BendUniformDefaults = {
   uDiscAbsorption: number;
   uDiscEmissionStrength: number;
   uDiscEmissionColor: Vector3;
+  uDiscEmissionInnerColor: Vector3;
+  uDiscEmissionOuterColor: Vector3;
+  uDiscEmissionRadialPower: number;
+  uDiscEmissionColorCurve: number;
   uDiscInnerSoftness: number;
   uDiscOuterSoftness: number;
   uDiscVerticalFalloffPower: number;
@@ -50,8 +54,12 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscHalfHeight: 0.35,
     uDiscDensity: 1.0,
     uDiscAbsorption: 1.2,
-    uDiscEmissionStrength: 1.4,
-    uDiscEmissionColor: new Vector3(2.6, 1.15, 0.35),
+    uDiscEmissionStrength: 6.0,
+    uDiscEmissionColor: new Vector3(1.0, 1.0, 1.0),
+    uDiscEmissionInnerColor: new Vector3(1.0, 0.95, 0.88),
+    uDiscEmissionOuterColor: new Vector3(1.0, 0.6, 0.28),
+    uDiscEmissionRadialPower: 2.0,
+    uDiscEmissionColorCurve: 2.5,
     uDiscInnerSoftness: 2.5,
     uDiscOuterSoftness: 3.9,
     uDiscVerticalFalloffPower: 4.0,
