@@ -12,10 +12,15 @@ import type { PassShaderMode } from "./pass-shader-mode";
 type FullscreenTriangleProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
   mode?: PassShaderMode;
+  adiskInnerRadius: number;
+  adiskOuterRadius: number;
+  adiskHeight: number;
   adiskLit: number;
   adiskDensityV: number;
   adiskDensityH: number;
-  noiseLod: number;
+  adiskNoiseScale: number;
+  adiskNoiseLod: number;
+  adiskSpeed: number;
 };
 
 type FullscreenPassMaterialInstance = InstanceType<
@@ -34,10 +39,15 @@ type FullscreenPassBendEnvMaterialInstance = InstanceType<
 export function FullscreenTriangle({
   observerCameraStateRef,
   mode = "debug",
+  adiskInnerRadius,
+  adiskOuterRadius,
+  adiskHeight,
   adiskLit,
   adiskDensityV,
   adiskDensityH,
-  noiseLod,
+  adiskNoiseScale,
+  adiskNoiseLod,
+  adiskSpeed,
 }: FullscreenTriangleProps) {
   const size = useThree((state) => state.size);
   const geometry = useMemo(() => {
@@ -123,10 +133,15 @@ export function FullscreenTriangle({
           key={FullscreenPassBendEnvMaterial.key}
           ref={bendEnvMaterialRef}
           side={DoubleSide}
+          ADISK_INNER_RADIUS={adiskInnerRadius}
+          ADISK_OUTER_RADIUS={adiskOuterRadius}
+          ADISK_HEIGHT={adiskHeight}
           ADISK_LIT={adiskLit}
           ADISK_DENSITY_V={adiskDensityV}
           ADISK_DENSITY_H={adiskDensityH}
-          ADISK_NOISE_LOD={noiseLod}
+          ADISK_NOISE_SCALE={adiskNoiseScale}
+          ADISK_NOISE_LOD={adiskNoiseLod}
+          ADISK_SPEED={adiskSpeed}
         />
       )}
     </mesh>

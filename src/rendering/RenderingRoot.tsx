@@ -25,6 +25,33 @@ export function RenderingRoot() {
     },
   });
 
+  const { innerRadius } = useControls("Accretion Disk", {
+    innerRadius: {
+      value: 2.6,
+      min: 1,
+      max: 20,
+      step: 0.1,
+    },
+  });
+
+  const { outerRadius } = useControls("Accretion Disk", {
+    outerRadius: {
+      value: 12.0,
+      min: 1,
+      max: 50,
+      step: 0.1,
+    },
+  });
+
+  const { height } = useControls("Accretion Disk", {
+    height: {
+      value: 0.2,
+      min: 0.1,
+      max: 5,
+      step: 0.1,
+    },
+  });
+
   const { lit } = useControls("Accretion Disk", {
     lit: {
       value: 0.5,
@@ -39,7 +66,7 @@ export function RenderingRoot() {
       value: 1.0,
       min: 0,
       max: 10,
-      step: 1,
+      step: 0.1,
     },
   });
 
@@ -48,7 +75,16 @@ export function RenderingRoot() {
       value: 1.0,
       min: 0,
       max: 10,
-      step: 1,
+      step: 0.1,
+    },
+  });
+
+  const { noiseScale } = useControls("Accretion Disk", {
+    noiseScale: {
+      value: 5.0,
+      min: 0,
+      max: 10,
+      step: 0.1,
     },
   });
 
@@ -61,16 +97,30 @@ export function RenderingRoot() {
     },
   });
 
+  const { speed } = useControls("Accretion Disk", {
+    speed: {
+      value: 0.5,
+      min: 0,
+      max: 10,
+      step: 0.1,
+    },
+  });
+
   return (
     <div className="render-root">
       <FullscreenPassCanvas
         className="main-pass-canvas"
         observerCameraStateRef={observerCameraStateRef}
         mode={passMode}
+        adiskInnerRadius={innerRadius}
+        adiskOuterRadius={outerRadius}
+        adiskHeight={height}
         adiskLit={lit}
         adiskDensityV={densityV}
         adiskDensityH={densityH}
-        noiseLod={noiseLod}
+        adiskNoiseScale={noiseScale}
+        adiskNoiseLod={noiseLod}
+        adiskSpeed={speed}
       />
       <div className="debug-inset">
         <PerspectiveDebugCanvas

@@ -1,13 +1,13 @@
 // Accretion Disk Configuration
-const float ADISK_INNER_RADIUS = 2.6;
-const float ADISK_OUTER_RADIUS = 12.0;
-const float ADISK_HEIGHT = 0.2;
+uniform float ADISK_INNER_RADIUS; // Inner radius of the accretion disk, in units of Schwarzschild radius
+uniform float ADISK_OUTER_RADIUS; // Outer radius of the accretion disk, in units of Schwarzschild radius
+uniform float ADISK_HEIGHT; // Thickness of the disk
 uniform float ADISK_LIT; // Overall brightness multiplier
 uniform float ADISK_DENSITY_V; // Vertical falloff (thinner at edges)
 uniform float ADISK_DENSITY_H; // Horizontal falloff
-const float ADISK_NOISE_SCALE = 1.0;
+uniform float ADISK_NOISE_SCALE; // Scale of the noise pattern
 uniform float ADISK_NOISE_LOD; // How detailed the clouds are
-const float ADISK_SPEED = 0.5;
+uniform float ADISK_SPEED; // Accretion disk rotation speed for noise animation
 
 // Fake time for testing
 uniform float uTime;
@@ -139,11 +139,7 @@ void accumulateDiskColor(vec3 pos, float stepDist, inout vec3 accumulatedColor) 
     else
       layerTheta -= uTime * ADISK_SPEED;
 
-    vec3 layerCoord = vec3(
-      sphericalCoord.x,
-      cos(layerTheta),
-      sin(layerTheta) + sphericalCoord.z
-    );
+    vec3 layerCoord = vec3(sphericalCoord.x, cos(layerTheta), sin(layerTheta) + sphericalCoord.z);
 
     noise *= 0.5 * snoise(layerCoord * pow(float(i), 2.0) * ADISK_NOISE_SCALE) + 0.5;
   }

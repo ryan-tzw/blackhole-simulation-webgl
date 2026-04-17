@@ -35,10 +35,15 @@ export const FullscreenPassBendEnvMaterial = shaderMaterial(
     uEnvMap: envMapTexture,
     uEnvExposure: 1.0,
     uTime: 0.0,
+    ADISK_INNER_RADIUS: 2.6, // Inner radius of the accretion disk, in units of Schwarzschild radius
+    ADISK_OUTER_RADIUS: 12.0, // Outer radius of the accretion disk, in units of Schwarzschild radius
+    ADISK_HEIGHT: 0.2, // Thickness of the disk
     ADISK_LIT: 0.5, // Overall brightness multiplier
     ADISK_DENSITY_V: 1.0, // Vertical falloff (thinner at edges)
     ADISK_DENSITY_H: 1.0, // Horizontal falloff
+    ADISK_NOISE_SCALE: 1.0, // Scale of the noise pattern (1.0 = about 1 cloud per unit distance)
     ADISK_NOISE_LOD: 5.0, // How detailed the clouds are
+    ADISK_SPEED: 0.5, // Accretion disk rotation speed for noise animation
   },
 
   vertexShader,

@@ -10,20 +10,30 @@ type FullscreenPassCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
   mode?: PassShaderMode;
+  adiskInnerRadius: number;
+  adiskOuterRadius: number;
+  adiskHeight: number;
   adiskLit: number;
   adiskDensityV: number;
   adiskDensityH: number;
-  noiseLod: number;
+  adiskNoiseScale: number;
+  adiskNoiseLod: number;
+  adiskSpeed: number;
 };
 
 export function FullscreenPassCanvas({
   className,
   observerCameraStateRef,
   mode = "march",
+  adiskInnerRadius,
+  adiskOuterRadius,
+  adiskHeight,
   adiskLit,
   adiskDensityV,
   adiskDensityH,
-  noiseLod,
+  adiskNoiseScale,
+  adiskNoiseLod,
+  adiskSpeed,
 }: FullscreenPassCanvasProps) {
   return (
     <Canvas
@@ -43,10 +53,15 @@ export function FullscreenPassCanvas({
       <FullscreenTriangle
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
+        adiskInnerRadius={adiskInnerRadius}
+        adiskOuterRadius={adiskOuterRadius}
+        adiskHeight={adiskHeight}
         adiskLit={adiskLit}
         adiskDensityV={adiskDensityV}
         adiskDensityH={adiskDensityH}
-        noiseLod={noiseLod}
+        adiskNoiseScale={adiskNoiseScale}
+        adiskNoiseLod={adiskNoiseLod}
+        adiskSpeed={adiskSpeed}
       />
       <FXAAPostProcess />
     </Canvas>
