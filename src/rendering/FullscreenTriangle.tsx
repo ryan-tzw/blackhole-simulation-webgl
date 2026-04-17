@@ -99,7 +99,6 @@ export function FullscreenTriangle({
       material.uDiscDensity = bendSettings.uDiscDensity;
       material.uDiscAbsorption = bendSettings.uDiscAbsorption;
       material.uDiscEmissionStrength = bendSettings.uDiscEmissionStrength;
-      material.uDiscEmissionColor.set(...bendSettings.uDiscEmissionColor);
       material.uDiscEmissionInnerColor.set(
         ...bendSettings.uDiscEmissionInnerColor,
       );

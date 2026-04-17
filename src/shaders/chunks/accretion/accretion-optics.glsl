@@ -190,7 +190,7 @@ void accumulateBeerLambertForDensity(
 
   float sigmaA = safeRho * uDiscAbsorption; // extinction/absorption coefficient
   vec3 sigmaEColor = safeRho * uDiscEmissionStrength * emissionGainBar *
-                     (uDiscEmissionColor * emissionTintBar); // emission coefficient
+                     emissionTintBar; // emission coefficient
 
   // Beer-Lambert extinction and segment-integrated emission.
   float stepTransmittance = exp(-sigmaA * dsInside);

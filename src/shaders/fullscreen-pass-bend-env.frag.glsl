@@ -25,7 +25,6 @@ uniform float uDiscHalfHeight;
 uniform float uDiscDensity;
 uniform float uDiscAbsorption;
 uniform float uDiscEmissionStrength;
-uniform vec3 uDiscEmissionColor;
 uniform vec3 uDiscEmissionInnerColor;
 uniform vec3 uDiscEmissionOuterColor;
 uniform float uDiscEmissionRadialPower;

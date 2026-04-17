@@ -54,9 +54,6 @@ export function RenderingRoot() {
     uDiscIntegrationQuality,
     uDiscNoiseScale,
     uDiscNoiseStrength,
-    uDiscEmissionColorR,
-    uDiscEmissionColorG,
-    uDiscEmissionColorB,
     uEnvExposure,
   } = useControls("Render", {
     passMode: {
@@ -210,24 +207,6 @@ export function RenderingRoot() {
         max: 2.0,
         step: 0.01,
       },
-      uDiscEmissionColorR: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[0],
-        min: 0.0,
-        max: 5.0,
-        step: 0.05,
-      },
-      uDiscEmissionColorG: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[1],
-        min: 0.0,
-        max: 5.0,
-        step: 0.05,
-      },
-      uDiscEmissionColorB: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColor[2],
-        min: 0.0,
-        max: 5.0,
-        step: 0.05,
-      },
     }),
     Environment: folder({
       uEnvExposure: {
@@ -275,11 +254,6 @@ export function RenderingRoot() {
     uDiscIntegrationQuality,
     uDiscNoiseScale,
     uDiscNoiseStrength,
-    uDiscEmissionColor: [
-      uDiscEmissionColorR,
-      uDiscEmissionColorG,
-      uDiscEmissionColorB,
-    ],
     uEnvExposure,
   };
 
