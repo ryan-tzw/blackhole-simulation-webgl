@@ -55,7 +55,7 @@ export function RenderingRoot() {
     uDiscNoiseScale,
     uDiscNoiseStrength,
     uEnvExposure,
-  } = useControls("Render", {
+  } = useControls({
     passMode: {
       value: "bend-env" as PassShaderMode,
       options: PASS_SHADER_MODES,
@@ -113,100 +113,110 @@ export function RenderingRoot() {
       uEnableDiscAccumulation: {
         value: DEFAULT_BEND_RENDER_SETTINGS.uEnableDiscAccumulation >= 0.5,
       },
-      uDiscInnerRadius: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerRadius,
-        min: 0.0,
-        max: 20.0,
-        step: 0.1,
-      },
-      uDiscOuterRadius: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscOuterRadius,
-        min: 0.5,
-        max: 40.0,
-        step: 0.1,
-      },
-      uDiscHalfHeight: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscHalfHeight,
-        min: 0.01,
-        max: 2.0,
-        step: 0.01,
-      },
-      uDiscDensity: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensity,
-        min: 0.0,
-        max: 5.0,
-        step: 0.05,
-      },
-      uDiscAbsorption: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscAbsorption,
-        min: 0.0,
-        max: 5.0,
-        step: 0.05,
-      },
-      uDiscEmissionStrength: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionStrength,
-        min: 0.0,
-        max: 15.0,
-        step: 0.05,
-      },
-      uDiscEmissionInnerColor: {
-        value: colorArrayToHex(
-          DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionInnerColor,
-        ),
-      },
-      uDiscEmissionOuterColor: {
-        value: colorArrayToHex(
-          DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionOuterColor,
-        ),
-      },
-      uDiscEmissionRadialPower: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionRadialPower,
-        min: 0.0,
-        max: 8.0,
-        step: 0.05,
-      },
-      uDiscEmissionColorCurve: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColorCurve,
-        min: 0.0,
-        max: 8.0,
-        step: 0.05,
-      },
-      uDiscInnerSoftness: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerSoftness,
-        min: 0.01,
-        max: 8.0,
-        step: 0.01,
-      },
-      uDiscOuterSoftness: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscOuterSoftness,
-        min: 0.01,
-        max: 8.0,
-        step: 0.01,
-      },
-      uDiscVerticalFalloffPower: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscVerticalFalloffPower,
-        min: 0.1,
-        max: 8.0,
-        step: 0.05,
-      },
-      uDiscIntegrationQuality: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscIntegrationQuality,
-        min: 1,
-        max: 3,
-        step: 1,
-      },
-      uDiscNoiseScale: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseScale,
-        min: 0.01,
-        max: 0.2,
-        step: 0.001,
-      },
-      uDiscNoiseStrength: {
-        value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseStrength,
-        min: 0.0,
-        max: 2.0,
-        step: 0.01,
-      },
+      Geometry: folder({
+        uDiscInnerRadius: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerRadius,
+          min: 0.0,
+          max: 20.0,
+          step: 0.1,
+        },
+        uDiscOuterRadius: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscOuterRadius,
+          min: 0.5,
+          max: 40.0,
+          step: 0.1,
+        },
+        uDiscHalfHeight: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscHalfHeight,
+          min: 0.01,
+          max: 2.0,
+          step: 0.01,
+        },
+      }),
+      Medium: folder({
+        uDiscDensity: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensity,
+          min: 0.0,
+          max: 5.0,
+          step: 0.05,
+        },
+        uDiscAbsorption: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscAbsorption,
+          min: 0.0,
+          max: 5.0,
+          step: 0.05,
+        },
+        uDiscInnerSoftness: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscInnerSoftness,
+          min: 0.01,
+          max: 8.0,
+          step: 0.01,
+        },
+        uDiscOuterSoftness: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscOuterSoftness,
+          min: 0.01,
+          max: 8.0,
+          step: 0.01,
+        },
+        uDiscVerticalFalloffPower: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscVerticalFalloffPower,
+          min: 0.1,
+          max: 8.0,
+          step: 0.05,
+        },
+      }),
+      Emission: folder({
+        uDiscEmissionStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionStrength,
+          min: 0.0,
+          max: 15.0,
+          step: 0.05,
+        },
+        uDiscEmissionInnerColor: {
+          value: colorArrayToHex(
+            DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionInnerColor,
+          ),
+        },
+        uDiscEmissionOuterColor: {
+          value: colorArrayToHex(
+            DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionOuterColor,
+          ),
+        },
+        uDiscEmissionRadialPower: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionRadialPower,
+          min: 0.0,
+          max: 8.0,
+          step: 0.05,
+        },
+        uDiscEmissionColorCurve: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscEmissionColorCurve,
+          min: 0.0,
+          max: 8.0,
+          step: 0.05,
+        },
+      }),
+      Integration: folder({
+        uDiscIntegrationQuality: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscIntegrationQuality,
+          min: 1,
+          max: 3,
+          step: 1,
+        },
+      }),
+      Noise: folder({
+        uDiscNoiseScale: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseScale,
+          min: 0.01,
+          max: 0.2,
+          step: 0.001,
+        },
+        uDiscNoiseStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscNoiseStrength,
+          min: 0.0,
+          max: 2.0,
+          step: 0.01,
+        },
+      }),
     }),
     Environment: folder({
       uEnvExposure: {
