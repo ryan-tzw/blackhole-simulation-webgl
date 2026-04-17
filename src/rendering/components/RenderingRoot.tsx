@@ -45,6 +45,7 @@ export function RenderingRoot() {
     uDiscOuterRadius,
     uDiscHalfHeight,
     uDiscDensity,
+    uDiscDensityRadialPower,
     uDiscAbsorption,
     uDiscEmissionStrength,
     uDiscEmissionInnerColor,
@@ -141,6 +142,12 @@ export function RenderingRoot() {
           value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensity,
           min: 0.0,
           max: 5.0,
+          step: 0.05,
+        },
+        uDiscDensityRadialPower: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscDensityRadialPower,
+          min: 0.0,
+          max: 8.0,
           step: 0.05,
         },
         uDiscAbsorption: {
@@ -247,6 +254,7 @@ export function RenderingRoot() {
     uDiscOuterRadius,
     uDiscHalfHeight,
     uDiscDensity,
+    uDiscDensityRadialPower,
     uDiscAbsorption,
     uDiscEmissionStrength,
     uDiscEmissionInnerColor: [

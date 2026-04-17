@@ -13,6 +13,7 @@ export type BendRenderSettings = {
   uDiscOuterRadius: number;
   uDiscHalfHeight: number;
   uDiscDensity: number;
+  uDiscDensityRadialPower: number;
   uDiscAbsorption: number;
   uDiscEmissionStrength: number;
   uDiscEmissionInnerColor: [number, number, number];
@@ -44,6 +45,7 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uDiscOuterRadius: bendDefaults.uDiscOuterRadius,
     uDiscHalfHeight: bendDefaults.uDiscHalfHeight,
     uDiscDensity: bendDefaults.uDiscDensity,
+    uDiscDensityRadialPower: bendDefaults.uDiscDensityRadialPower,
     uDiscAbsorption: bendDefaults.uDiscAbsorption,
     uDiscEmissionStrength: bendDefaults.uDiscEmissionStrength,
     uDiscEmissionInnerColor: [
