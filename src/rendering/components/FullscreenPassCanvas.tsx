@@ -39,6 +39,7 @@ export function FullscreenPassCanvas({
         near: 0.1,
         far: 100,
       }}
+      dpr={1}
     >
       {showPerf ? <Perf position="bottom-left" /> : null}
       <ObserverCameraController

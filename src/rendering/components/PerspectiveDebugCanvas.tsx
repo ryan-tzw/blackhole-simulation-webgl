@@ -27,7 +27,7 @@ export function PerspectiveDebugCanvas({
   const sharedCubemapTexture = useMemo(() => getSharedCubemapTexture(), []);
 
   return (
-    <Canvas className={className}>
+    <Canvas className={className} dpr={1}>
       <color attach="background" args={["#1a1d24"]} />
 
       <PerspectiveCamera
