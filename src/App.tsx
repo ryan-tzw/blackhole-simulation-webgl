@@ -6,7 +6,7 @@ export function App() {
     <>
       <Leva
         theme={{
-          sizes: { rootWidth: "360px" },
+          sizes: { rootWidth: "400px" },
         }}
       />
       <RenderingRoot />
