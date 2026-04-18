@@ -1,4 +1,6 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useProgress } from "@react-three/drei";
+import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
 
 type StartupLoadingOverlayProps = {
   children: (callbacks: { onMainFirstFrame: () => void }) => ReactNode;
@@ -7,10 +9,17 @@ type StartupLoadingOverlayProps = {
 export function StartupLoadingOverlay({
   children,
 }: StartupLoadingOverlayProps) {
-  const [isInitialRenderReady, setIsInitialRenderReady] = useState(false);
+  // Kick off shared cubemap loading immediately so startup progress tracks it.
+  useMemo(() => getSharedCubemapTexture(), []);
+
+  const [isMainFirstFrameReady, setIsMainFirstFrameReady] = useState(false);
+  const { active, loaded, total } = useProgress();
+
+  const areAssetsReady = total <= 0 ? !active : !active && loaded >= total;
+  const isInitialRenderReady = isMainFirstFrameReady && areAssetsReady;
 
   const onMainFirstFrame = useCallback(() => {
-    setIsInitialRenderReady(true);
+    setIsMainFirstFrameReady(true);
   }, []);
 
   return (
