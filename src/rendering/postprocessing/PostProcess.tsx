@@ -9,19 +9,35 @@ import {
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import { Suspense } from "react";
 
-export function PostProcess() {
+type PostProcessProps = {
+  bloomThreshold: number;
+  bloomSmoothing: number;
+  bloomIntensity: number;
+  noiseOpacity: number;
+};
+
+export function PostProcess({
+  bloomThreshold,
+  bloomSmoothing,
+  bloomIntensity,
+  noiseOpacity,
+}: PostProcessProps) {
   return (
     <Suspense fallback={null}>
       <EffectComposer multisampling={0} enableNormalPass={false}>
         <SMAA />
         <Bloom
-          luminanceThreshold={0.5}
-          luminanceSmoothing={0.1}
-          intensity={0.1}
+          luminanceThreshold={bloomThreshold}
+          luminanceSmoothing={bloomSmoothing}
+          intensity={bloomIntensity}
         />
-        <Vignette eskil={false} offset={0.5} darkness={0.5} />
+        <Vignette eskil={false} offset={0.5} darkness={0.5} opacity={1} />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+        <Noise
+          premultiply
+          blendFunction={BlendFunction.ADD}
+          opacity={noiseOpacity}
+        />
       </EffectComposer>
     </Suspense>
   );

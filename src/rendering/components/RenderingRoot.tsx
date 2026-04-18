@@ -19,6 +19,12 @@ import { StartupLoadingOverlay } from "./StartupLoadingOverlay";
 import "./rendering-root.css";
 
 const DEFAULT_BEND_RENDER_SETTINGS = createBendRenderSettingsDefaults();
+const DEFAULT_POSTPROCCESSING_SETTINGS = {
+  bloomThreshold: 0.5,
+  bloomSmoothing: 0.1,
+  bloomIntensity: 0.1,
+  noiseOpacity: 0.25,
+} as const;
 
 function colorArrayToHex(color: [number, number, number]): string {
   return `#${new Color(color[0], color[1], color[2]).getHexString()}`;
@@ -68,6 +74,10 @@ export function RenderingRoot() {
     uDiscGravRedshiftStrength,
     uDiscGravRedshiftTintStrength,
     uEnvExposure,
+    bloomThreshold,
+    bloomSmoothing,
+    bloomIntensity,
+    noiseOpacity,
   } = useControls({
     passMode: {
       value: "bend-env" as PassShaderMode,
@@ -301,6 +311,32 @@ export function RenderingRoot() {
         step: 0.05,
       },
     }),
+    Postproccessing: folder({
+      bloomThreshold: {
+        value: DEFAULT_POSTPROCCESSING_SETTINGS.bloomThreshold,
+        min: 0.0,
+        max: 2.0,
+        step: 0.01,
+      },
+      bloomSmoothing: {
+        value: DEFAULT_POSTPROCCESSING_SETTINGS.bloomSmoothing,
+        min: 0.0,
+        max: 1.0,
+        step: 0.01,
+      },
+      bloomIntensity: {
+        value: DEFAULT_POSTPROCCESSING_SETTINGS.bloomIntensity,
+        min: 0.0,
+        max: 3.0,
+        step: 0.01,
+      },
+      noiseOpacity: {
+        value: DEFAULT_POSTPROCCESSING_SETTINGS.noiseOpacity,
+        min: 0.0,
+        max: 1.0,
+        step: 0.01,
+      },
+    }),
   });
 
   const discEmissionInnerColor = new Color(uDiscEmissionInnerColor);
@@ -361,6 +397,10 @@ export function RenderingRoot() {
             className="main-pass-canvas"
             observerCameraStateRef={observerCameraStateRef}
             mode={passMode}
+            bloomThreshold={bloomThreshold}
+            bloomSmoothing={bloomSmoothing}
+            bloomIntensity={bloomIntensity}
+            noiseOpacity={noiseOpacity}
             showPerf={showPerf}
             onFirstFrame={onMainFirstFrame}
           />

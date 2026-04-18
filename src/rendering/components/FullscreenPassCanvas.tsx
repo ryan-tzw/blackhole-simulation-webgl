@@ -14,6 +14,10 @@ type FullscreenPassCanvasProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
   bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
+  bloomThreshold: number;
+  bloomSmoothing: number;
+  bloomIntensity: number;
+  noiseOpacity: number;
   showPerf?: boolean;
   onFirstFrame?: () => void;
 };
@@ -23,6 +27,10 @@ export function FullscreenPassCanvas({
   observerCameraStateRef,
   bendSettings,
   mode = "march",
+  bloomThreshold,
+  bloomSmoothing,
+  bloomIntensity,
+  noiseOpacity,
   showPerf = true,
   onFirstFrame,
 }: FullscreenPassCanvasProps) {
@@ -50,7 +58,12 @@ export function FullscreenPassCanvas({
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
       />
-      <PostProcess />
+      <PostProcess
+        bloomThreshold={bloomThreshold}
+        bloomSmoothing={bloomSmoothing}
+        bloomIntensity={bloomIntensity}
+        noiseOpacity={noiseOpacity}
+      />
       <FirstFrameSignal onFirstFrame={onFirstFrame} />
     </Canvas>
   );
