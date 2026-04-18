@@ -15,8 +15,6 @@ uniform float uEnvExposure;
 const int MAX_STEPS = 128;
 const float STEP_SIZE = 0.1;
 
-#include ./chunks/color/aces-tonemap.glsl;
-
 bool isInsideBlackHole(vec3 worldPosition) {
   return distance(worldPosition, uBlackHolePosition) <= uBlackHoleRadius;
 }
@@ -43,6 +41,5 @@ void main() {
   vec3 cubeDirection = normalize(rayDirection);
   cubeDirection.x *= -1.0;
   vec3 envColor = textureCube(uEnvMap, cubeDirection).rgb * uEnvExposure;
-  vec3 toneMapped = acesTonemap(envColor);
-  gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
+  gl_FragColor = vec4(envColor, 1.0);
 }

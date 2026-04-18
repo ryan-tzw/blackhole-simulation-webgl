@@ -5,8 +5,7 @@ vec3 sampleEnvLinear(vec3 worldDirection) {
 }
 
 void writeLinearColor(vec3 linearColor) {
-  vec3 toneMapped = acesTonemap(linearColor);
-  gl_FragColor = vec4(linearToSrgb(toneMapped), 1.0);
+  gl_FragColor = vec4(linearColor, 1.0);
 }
 
 void renderEnv(vec3 worldDirection) {

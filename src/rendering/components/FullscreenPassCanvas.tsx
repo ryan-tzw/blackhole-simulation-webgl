@@ -4,7 +4,7 @@ import type { ObserverCameraState } from "@/rendering/camera/camera-state";
 import type { BendRenderSettings } from "@/rendering/config/bend-render-settings";
 import type { PassShaderMode } from "@/rendering/config/pass-shader-mode";
 import { ObserverCameraController } from "@/rendering/camera/ObserverCameraController";
-import { FXAAPostProcess } from "@/rendering/postprocessing/FXAAPostProcess";
+import { PostProcess } from "@/rendering/postprocessing/PostProcess";
 import { FullscreenTriangle } from "./FullscreenTriangle";
 import { Perf } from "r3f-perf";
 import { FirstFrameSignal } from "./FirstFrameSignal";
@@ -49,7 +49,7 @@ export function FullscreenPassCanvas({
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
       />
-      <FXAAPostProcess />
+      <PostProcess mode={mode} />
       <FirstFrameSignal onFirstFrame={onFirstFrame} />
     </Canvas>
   );

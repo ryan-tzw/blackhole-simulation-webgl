@@ -61,7 +61,6 @@ const float LARGE_VALUE = 1e8;
 #include ./chunks/accretion/accretion-geometry.glsl;
 #include ./chunks/accretion/accretion-density.glsl;
 #include ./chunks/accretion/accretion-optics.glsl;
-#include ./chunks/color/aces-tonemap.glsl;
 #include ./chunks/env/env-render.glsl;
 #include ./chunks/termination/termination-env.glsl;
 
