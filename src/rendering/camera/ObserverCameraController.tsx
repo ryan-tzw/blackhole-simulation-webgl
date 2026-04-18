@@ -12,10 +12,16 @@ import {
 } from "./camera-state";
 
 type ObserverCameraControllerProps = {
+  autoOrbit: boolean;
   observerCameraStateRef: RefObject<ObserverCameraState>;
 };
 
+const AUTO_ORBIT_TARGET_SPEED = -0.2;
+const AUTO_ORBIT_ACCELERATION = 4.0;
+const AUTO_ORBIT_STOP_EPS = 1e-4;
+
 export function ObserverCameraController({
+  autoOrbit,
   observerCameraStateRef,
 }: ObserverCameraControllerProps) {
   const gl = useThree((state) => state.gl);
@@ -25,6 +31,7 @@ export function ObserverCameraController({
   const worldForwardRef = useRef(new Vector3());
   const worldRightRef = useRef(new Vector3());
   const worldUpRef = useRef(new Vector3());
+  const orbitSpeedRef = useRef(0);
 
   if (observerCameraRef.current == null) {
     const camera = new ThreePerspectiveCamera(
@@ -87,6 +94,8 @@ export function ObserverCameraController({
     controls.target.set(...OBSERVER_CAMERA_DEFAULTS.target);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 0;
     controls.update();
     orbitControlsRef.current = controls;
     publishObserverCameraState();
@@ -97,8 +106,24 @@ export function ObserverCameraController({
     };
   }, [gl, publishObserverCameraState]);
 
-  useFrame(() => {
-    orbitControlsRef.current?.update();
+  useFrame((_, delta) => {
+    const controls = orbitControlsRef.current;
+    if (!controls) {
+      return;
+    }
+
+    const targetOrbitSpeed = autoOrbit ? AUTO_ORBIT_TARGET_SPEED : 0;
+    orbitSpeedRef.current = MathUtils.damp(
+      orbitSpeedRef.current,
+      targetOrbitSpeed,
+      AUTO_ORBIT_ACCELERATION,
+      delta,
+    );
+
+    const currentOrbitSpeed = orbitSpeedRef.current;
+    controls.autoRotate = Math.abs(currentOrbitSpeed) > AUTO_ORBIT_STOP_EPS;
+    controls.autoRotateSpeed = currentOrbitSpeed;
+    controls.update();
     publishObserverCameraState();
   }, -1);
 

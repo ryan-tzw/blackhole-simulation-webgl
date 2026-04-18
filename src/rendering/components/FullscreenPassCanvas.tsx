@@ -12,6 +12,7 @@ import { FirstFrameSignal } from "./FirstFrameSignal";
 type FullscreenPassCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  autoOrbit: boolean;
   bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
   bloomThreshold: number;
@@ -25,6 +26,7 @@ type FullscreenPassCanvasProps = {
 export function FullscreenPassCanvas({
   className,
   observerCameraStateRef,
+  autoOrbit,
   bendSettings,
   mode = "march",
   bloomThreshold,
@@ -51,6 +53,7 @@ export function FullscreenPassCanvas({
     >
       {showPerf ? <Perf position="bottom-left" /> : null}
       <ObserverCameraController
+        autoOrbit={autoOrbit}
         observerCameraStateRef={observerCameraStateRef}
       />
       <FullscreenTriangle

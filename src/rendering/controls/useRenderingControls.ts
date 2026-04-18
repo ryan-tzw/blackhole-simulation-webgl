@@ -20,6 +20,7 @@ type RenderingControlsState = {
   passMode: PassShaderMode;
   showDebugView: boolean;
   showPerf: boolean;
+  autoOrbit: boolean;
   bendSettings: BendRenderSettings;
   postProcessingSettings: PostProcessingSettings;
 };
@@ -42,6 +43,7 @@ export function useRenderingControls(): RenderingControlsState {
     passMode,
     showDebugView,
     showPerf,
+    autoOrbit,
     uRs,
     uMaxSteps,
     uStepAdapt,
@@ -423,6 +425,13 @@ export function useRenderingControls(): RenderingControlsState {
         { collapsed: true },
       ),
     }),
+
+    Camera: folder({
+      autoOrbit: {
+        value: true,
+        label: "Auto Orbit",
+      },
+    }),
   });
 
   const discEmissionInnerColor = new Color(uDiscEmissionInnerColor);
@@ -432,6 +441,7 @@ export function useRenderingControls(): RenderingControlsState {
     passMode,
     showDebugView,
     showPerf,
+    autoOrbit,
     bendSettings: {
       uRs,
       uMaxSteps,
