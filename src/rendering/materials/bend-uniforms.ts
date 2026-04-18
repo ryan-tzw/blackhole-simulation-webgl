@@ -1,4 +1,4 @@
-import { Data3DTexture, Vector3 } from "three";
+import { Color, Data3DTexture, Vector3 } from "three";
 import { getSharedDiscNoiseTexture } from "@/rendering/environment/disc-noise-texture";
 
 export type BendUniformDefaults = {
@@ -44,6 +44,14 @@ export type BendUniformDefaults = {
   uMaxIterColor: Vector3;
 };
 
+const DEFAULT_DISC_EMISSION_INNER_HEX = "#f9af73";
+const DEFAULT_DISC_EMISSION_OUTER_HEX = "#f2a15f";
+
+function vector3FromHex(hex: string): Vector3 {
+  const color = new Color(hex);
+  return new Vector3(color.r, color.g, color.b);
+}
+
 // OSOT: canonical shared defaults for bend-debug and bend-env uniforms.
 export function createBendUniformDefaults(): BendUniformDefaults {
   const PI = 3.14159265359;
@@ -67,8 +75,8 @@ export function createBendUniformDefaults(): BendUniformDefaults {
     uDiscDensityRadialPower: 1.5,
     uDiscAbsorption: 1.2,
     uDiscEmissionStrength: 6.0,
-    uDiscEmissionInnerColor: new Vector3(0.949, 0.431, 0.173),
-    uDiscEmissionOuterColor: new Vector3(0.922, 0.686, 0.686),
+    uDiscEmissionInnerColor: vector3FromHex(DEFAULT_DISC_EMISSION_INNER_HEX),
+    uDiscEmissionOuterColor: vector3FromHex(DEFAULT_DISC_EMISSION_OUTER_HEX),
     uDiscEmissionRadialPower: 2.0,
     uDiscEmissionColorCurve: 0.5,
     uDiscInnerSoftness: 2.5,
