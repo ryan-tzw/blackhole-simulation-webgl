@@ -45,6 +45,8 @@ uniform float uDiscAdvectionBlendFraction;
 uniform float uDiscDopplerStrength;
 uniform float uDiscDopplerTintStrength;
 uniform float uDiscDopplerMaxBeta;
+uniform float uDiscGravRedshiftStrength;
+uniform float uDiscGravRedshiftTintStrength;
 
 uniform samplerCube uEnvMap;
 uniform float uEnvExposure;

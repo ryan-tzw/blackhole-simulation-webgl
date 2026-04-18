@@ -157,9 +157,14 @@ void averageDiscOpticsOnSpan(
     );
     float dopplerGain = 1.0;
     vec3 dopplerTint = vec3(1.0);
+    float gravRedshiftGain = 1.0;
+    vec3 gravRedshiftTint = vec3(1.0);
     discDopplerModulation(p, rayDir, dopplerGain, dopplerTint);
+    discGravitationalRedshiftModulation(p, gravRedshiftGain, gravRedshiftTint);
     localEmissionGain *= dopplerGain;
     localEmissionTint *= dopplerTint;
+    localEmissionGain *= gravRedshiftGain;
+    localEmissionTint *= gravRedshiftTint;
     accumulateWeightedDiscOpticsSample(
       localDensity,
       localEmissionGain,

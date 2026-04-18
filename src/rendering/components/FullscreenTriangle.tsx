@@ -126,6 +126,10 @@ export function FullscreenTriangle({
       material.uDiscDopplerStrength = bendSettings.uDiscDopplerStrength;
       material.uDiscDopplerTintStrength = bendSettings.uDiscDopplerTintStrength;
       material.uDiscDopplerMaxBeta = bendSettings.uDiscDopplerMaxBeta;
+      material.uDiscGravRedshiftStrength =
+        bendSettings.uDiscGravRedshiftStrength;
+      material.uDiscGravRedshiftTintStrength =
+        bendSettings.uDiscGravRedshiftTintStrength;
     };
 
     updateMaterial(debugMaterialRef.current);

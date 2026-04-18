@@ -65,6 +65,8 @@ export function RenderingRoot() {
     uDiscDopplerStrength,
     uDiscDopplerTintStrength,
     uDiscDopplerMaxBeta,
+    uDiscGravRedshiftStrength,
+    uDiscGravRedshiftTintStrength,
     uEnvExposure,
   } = useControls({
     passMode: {
@@ -277,6 +279,18 @@ export function RenderingRoot() {
           max: 0.99,
           step: 0.01,
         },
+        uDiscGravRedshiftStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscGravRedshiftStrength,
+          min: 0.0,
+          max: 2.0,
+          step: 0.01,
+        },
+        uDiscGravRedshiftTintStrength: {
+          value: DEFAULT_BEND_RENDER_SETTINGS.uDiscGravRedshiftTintStrength,
+          min: 0.0,
+          max: 3.0,
+          step: 0.05,
+        },
       }),
     }),
     Environment: folder({
@@ -333,6 +347,8 @@ export function RenderingRoot() {
     uDiscDopplerStrength,
     uDiscDopplerTintStrength,
     uDiscDopplerMaxBeta,
+    uDiscGravRedshiftStrength,
+    uDiscGravRedshiftTintStrength,
     uEnvExposure,
   };
 

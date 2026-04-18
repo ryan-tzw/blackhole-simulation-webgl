@@ -4,6 +4,8 @@ const float DISC_MAX_BEAMING = 12.0;
 const float DISC_MIN_BEAMING = 0.12;
 const vec3 DISC_DOPPLER_BLUE_TINT = vec3(0.78, 0.90, 1.28);
 const vec3 DISC_DOPPLER_RED_TINT = vec3(1.28, 0.84, 0.74);
+const vec3 DISC_GRAV_BLUE_TINT = vec3(0.92, 0.96, 1.08);
+const vec3 DISC_GRAV_RED_TINT = vec3(1.18, 0.86, 0.78);
 
 // Rotates an XZ position around +Y by an angle in radians.
 vec2 rotateXZ(vec2 xz, float angle) {
@@ -70,6 +72,39 @@ void discDopplerModulation(
     float tintAmount = clamp(abs(signedShift) * tintStrength, 0.0, 1.0);
     vec3 targetTint = signedShift >= 0.0 ? DISC_DOPPLER_BLUE_TINT : DISC_DOPPLER_RED_TINT;
     dopplerTint = mix(vec3(1.0), targetTint, tintAmount);
+  }
+}
+
+// Computes gravitational redshift gain and tint from emitter radius to observer radius.
+void discGravitationalRedshiftModulation(
+  vec3 p,
+  out float redshiftGain,
+  out vec3 redshiftTint
+) {
+  redshiftGain = 1.0;
+  redshiftTint = vec3(1.0);
+
+  float gainStrength = max(uDiscGravRedshiftStrength, 0.0);
+  float tintStrength = max(uDiscGravRedshiftTintStrength, 0.0);
+  if (gainStrength <= ACCRETION_EPS && tintStrength <= ACCRETION_EPS) {
+    return;
+  }
+
+  float rEmit = max(length(p), uRs + ACCRETION_EPS);
+  float rObserver = max(length(uCameraPos), uRs + ACCRETION_EPS);
+  float lapseEmit = sqrt(max(1.0 - uRs / rEmit, ACCRETION_EPS));
+  float lapseObserver = sqrt(max(1.0 - uRs / rObserver, ACCRETION_EPS));
+  float g = clamp(lapseEmit / lapseObserver, 0.05, 5.0);
+
+  if (gainStrength > ACCRETION_EPS) {
+    redshiftGain = pow(g, 3.0 * gainStrength);
+  }
+
+  if (tintStrength > ACCRETION_EPS) {
+    float signedShift = clamp(log2(g), -1.0, 1.0);
+    float tintAmount = clamp(abs(signedShift) * tintStrength, 0.0, 1.0);
+    vec3 targetTint = signedShift >= 0.0 ? DISC_GRAV_BLUE_TINT : DISC_GRAV_RED_TINT;
+    redshiftTint = mix(vec3(1.0), targetTint, tintAmount);
   }
 }
 

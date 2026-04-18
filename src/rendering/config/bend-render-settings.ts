@@ -33,6 +33,8 @@ export type BendRenderSettings = {
   uDiscDopplerStrength: number;
   uDiscDopplerTintStrength: number;
   uDiscDopplerMaxBeta: number;
+  uDiscGravRedshiftStrength: number;
+  uDiscGravRedshiftTintStrength: number;
   uEnvExposure: number;
 };
 
@@ -80,6 +82,8 @@ export function createBendRenderSettingsDefaults(): BendRenderSettings {
     uDiscDopplerStrength: bendDefaults.uDiscDopplerStrength,
     uDiscDopplerTintStrength: bendDefaults.uDiscDopplerTintStrength,
     uDiscDopplerMaxBeta: bendDefaults.uDiscDopplerMaxBeta,
+    uDiscGravRedshiftStrength: bendDefaults.uDiscGravRedshiftStrength,
+    uDiscGravRedshiftTintStrength: bendDefaults.uDiscGravRedshiftTintStrength,
     uEnvExposure: 1.0,
   };
 }
