@@ -50,7 +50,7 @@ export function FullscreenPassCanvas({
         observerCameraStateRef={observerCameraStateRef}
         mode={mode}
       />
-      <PostProcess mode={mode} />
+      <PostProcess />
       <FirstFrameSignal onFirstFrame={onFirstFrame} />
     </Canvas>
   );
