@@ -50,6 +50,13 @@ export function RenderingRoot() {
           {showDebugView ? (
             <DebugInsetCanvas observerCameraStateRef={observerCameraStateRef} />
           ) : null}
+          {cameraControlMode === "fps" ? (
+            <div className="fps-help-overlay" aria-live="polite">
+              <div>WASD - Move</div>
+              <div>Z/X - Down/Up</div>
+              <div>Esc - Show cursor</div>
+            </div>
+          ) : null}
         </div>
       )}
     </StartupLoadingOverlay>
