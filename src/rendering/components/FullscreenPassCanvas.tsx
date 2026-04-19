@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
+import type { CameraControlMode } from "@/rendering/camera/camera-control-mode";
 import type { ObserverCameraState } from "@/rendering/camera/camera-state";
 import type { BendRenderSettings } from "@/rendering/config/bend-render-settings";
 import type { PassShaderMode } from "@/rendering/config/pass-shader-mode";
@@ -12,7 +13,11 @@ import { FirstFrameSignal } from "./FirstFrameSignal";
 type FullscreenPassCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  cameraControlMode: CameraControlMode;
   autoOrbit: boolean;
+  fpsMoveAcceleration: number;
+  fpsMoveDrag: number;
+  fpsMoveMaxSpeed: number;
   bendSettings: BendRenderSettings;
   mode?: PassShaderMode;
   bloomThreshold: number;
@@ -26,7 +31,11 @@ type FullscreenPassCanvasProps = {
 export function FullscreenPassCanvas({
   className,
   observerCameraStateRef,
+  cameraControlMode,
   autoOrbit,
+  fpsMoveAcceleration,
+  fpsMoveDrag,
+  fpsMoveMaxSpeed,
   bendSettings,
   mode = "march",
   bloomThreshold,
@@ -53,7 +62,11 @@ export function FullscreenPassCanvas({
     >
       {showPerf ? <Perf position="bottom-left" /> : null}
       <ObserverCameraController
+        cameraControlMode={cameraControlMode}
         autoOrbit={autoOrbit}
+        fpsMoveAcceleration={fpsMoveAcceleration}
+        fpsMoveDrag={fpsMoveDrag}
+        fpsMoveMaxSpeed={fpsMoveMaxSpeed}
         observerCameraStateRef={observerCameraStateRef}
       />
       <FullscreenTriangle

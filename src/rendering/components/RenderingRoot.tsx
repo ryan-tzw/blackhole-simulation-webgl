@@ -17,7 +17,11 @@ export function RenderingRoot() {
     passMode,
     showDebugView,
     showPerf,
+    cameraControlMode,
     autoOrbit,
+    fpsMoveAcceleration,
+    fpsMoveDrag,
+    fpsMoveMaxSpeed,
     bendSettings,
     postProcessingSettings,
   } = useRenderingControls();
@@ -30,7 +34,11 @@ export function RenderingRoot() {
             bendSettings={bendSettings}
             className="main-pass-canvas"
             observerCameraStateRef={observerCameraStateRef}
+            cameraControlMode={cameraControlMode}
             autoOrbit={autoOrbit}
+            fpsMoveAcceleration={fpsMoveAcceleration}
+            fpsMoveDrag={fpsMoveDrag}
+            fpsMoveMaxSpeed={fpsMoveMaxSpeed}
             mode={passMode}
             bloomThreshold={postProcessingSettings.bloomThreshold}
             bloomSmoothing={postProcessingSettings.bloomSmoothing}

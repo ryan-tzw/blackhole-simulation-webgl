@@ -1,6 +1,10 @@
 import { folder, useControls } from "leva";
 import { Color } from "three";
 import {
+  CAMERA_CONTROL_MODES,
+  type CameraControlMode,
+} from "@/rendering/camera/camera-control-mode";
+import {
   createBendRenderSettingsDefaults,
   type BendRenderSettings,
 } from "@/rendering/config/bend-render-settings";
@@ -20,7 +24,11 @@ type RenderingControlsState = {
   passMode: PassShaderMode;
   showDebugView: boolean;
   showPerf: boolean;
+  cameraControlMode: CameraControlMode;
   autoOrbit: boolean;
+  fpsMoveAcceleration: number;
+  fpsMoveDrag: number;
+  fpsMoveMaxSpeed: number;
   bendSettings: BendRenderSettings;
   postProcessingSettings: PostProcessingSettings;
 };
@@ -43,7 +51,11 @@ export function useRenderingControls(): RenderingControlsState {
     passMode,
     showDebugView,
     showPerf,
+    cameraControlMode,
     autoOrbit,
+    fpsMoveAcceleration,
+    fpsMoveDrag,
+    fpsMoveMaxSpeed,
     uRs,
     uMaxSteps,
     uStepAdapt,
@@ -427,9 +439,35 @@ export function useRenderingControls(): RenderingControlsState {
     }),
 
     Camera: folder({
+      cameraControlMode: {
+        value: "orbit" as CameraControlMode,
+        label: "Control Mode",
+        options: CAMERA_CONTROL_MODES,
+      },
       autoOrbit: {
         value: true,
         label: "Auto Orbit",
+      },
+      fpsMoveAcceleration: {
+        value: 18.0,
+        label: "FPS Acceleration",
+        min: 0.1,
+        max: 60.0,
+        step: 0.1,
+      },
+      fpsMoveDrag: {
+        value: 6.0,
+        label: "FPS Drag",
+        min: 0.1,
+        max: 30.0,
+        step: 0.1,
+      },
+      fpsMoveMaxSpeed: {
+        value: 12.0,
+        label: "FPS Max Speed",
+        min: 0.1,
+        max: 50.0,
+        step: 0.1,
       },
     }),
   });
@@ -441,7 +479,11 @@ export function useRenderingControls(): RenderingControlsState {
     passMode,
     showDebugView,
     showPerf,
+    cameraControlMode,
     autoOrbit,
+    fpsMoveAcceleration,
+    fpsMoveDrag,
+    fpsMoveMaxSpeed,
     bendSettings: {
       uRs,
       uMaxSteps,

@@ -1,130 +1,167 @@
-import { useCallback, useEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { Vector3 } from "three";
+import type { CameraControlMode } from "./camera-control-mode";
+import type { ObserverCameraState } from "./camera-state";
 import {
-  MathUtils,
-  PerspectiveCamera as ThreePerspectiveCamera,
-  Vector3,
-} from "three";
-import { OrbitControls as ThreeOrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  createFpsCameraModeController,
+  disposeFpsCameraModeController,
+  updateFpsCameraModeController,
+  type FpsCameraModeController,
+} from "./fps-camera-mode";
 import {
-  OBSERVER_CAMERA_DEFAULTS,
-  type ObserverCameraState,
-} from "./camera-state";
+  createObserverCamera,
+  createObserverCameraStateScratch,
+  publishObserverCameraState,
+  syncObserverCameraAspect,
+} from "./observer-camera-core";
+import {
+  computeOrbitTargetFromCamera,
+  createDefaultOrbitTarget,
+  createOrbitCameraModeController,
+  disposeOrbitCameraModeController,
+  getOrbitDistance,
+  getOrbitTarget,
+  updateOrbitCameraModeController,
+  type OrbitCameraModeController,
+} from "./orbit-camera-mode";
 
 type ObserverCameraControllerProps = {
+  cameraControlMode: CameraControlMode;
   autoOrbit: boolean;
+  fpsMoveAcceleration: number;
+  fpsMoveDrag: number;
+  fpsMoveMaxSpeed: number;
   observerCameraStateRef: RefObject<ObserverCameraState>;
 };
 
-const AUTO_ORBIT_TARGET_SPEED = -0.2;
-const AUTO_ORBIT_ACCELERATION = 4.0;
-const AUTO_ORBIT_STOP_EPS = 1e-4;
-
 export function ObserverCameraController({
+  cameraControlMode,
   autoOrbit,
+  fpsMoveAcceleration,
+  fpsMoveDrag,
+  fpsMoveMaxSpeed,
   observerCameraStateRef,
 }: ObserverCameraControllerProps) {
   const gl = useThree((state) => state.gl);
   const size = useThree((state) => state.size);
-  const orbitControlsRef = useRef<ThreeOrbitControls | null>(null);
-  const observerCameraRef = useRef<ThreePerspectiveCamera | null>(null);
-  const worldForwardRef = useRef(new Vector3());
-  const worldRightRef = useRef(new Vector3());
-  const worldUpRef = useRef(new Vector3());
-  const orbitSpeedRef = useRef(0);
+  const observerCamera = useMemo(() => createObserverCamera(), []);
+  const cameraStateScratch = useMemo(
+    () => createObserverCameraStateScratch(),
+    [],
+  );
+  const defaultOrbitTarget = useMemo(() => createDefaultOrbitTarget(), []);
 
-  if (observerCameraRef.current == null) {
-    const camera = new ThreePerspectiveCamera(
-      OBSERVER_CAMERA_DEFAULTS.fovDegrees,
-      1,
-      OBSERVER_CAMERA_DEFAULTS.near,
-      OBSERVER_CAMERA_DEFAULTS.far,
+  const orbitControllerRef = useRef<OrbitCameraModeController | null>(null);
+  const fpsControllerRef = useRef<FpsCameraModeController | null>(null);
+  const previousModeRef = useRef<CameraControlMode>(cameraControlMode);
+  const orbitDistanceRef = useRef(
+    observerCamera.position.distanceTo(defaultOrbitTarget),
+  );
+  const orbitTargetRef = useRef(defaultOrbitTarget.clone());
+  const targetScratchRef = useRef(new Vector3());
+
+  const publishCurrentCameraState = useCallback(() => {
+    publishObserverCameraState(
+      observerCamera,
+      observerCameraStateRef,
+      cameraStateScratch,
     );
-    camera.position.set(...OBSERVER_CAMERA_DEFAULTS.position);
-    camera.up.set(0, 1, 0);
-    camera.lookAt(...OBSERVER_CAMERA_DEFAULTS.target);
-    camera.updateProjectionMatrix();
-    camera.updateMatrixWorld();
-    observerCameraRef.current = camera;
-  }
-
-  const publishObserverCameraState = useCallback(() => {
-    const observerCamera = observerCameraRef.current;
-    if (!observerCamera) {
-      return;
-    }
-
-    const worldForward = worldForwardRef.current;
-    const worldRight = worldRightRef.current;
-    const worldUp = worldUpRef.current;
-
-    observerCamera.getWorldDirection(worldForward);
-    worldRight.set(1, 0, 0).applyQuaternion(observerCamera.quaternion);
-    worldUp.set(0, 1, 0).applyQuaternion(observerCamera.quaternion);
-
-    observerCameraStateRef.current = {
-      position: [...observerCamera.position.toArray()],
-      right: [...worldRight.toArray()],
-      up: [...worldUp.toArray()],
-      forward: [...worldForward.toArray()],
-      fovYRadians: MathUtils.degToRad(observerCamera.fov),
-      aspect: observerCamera.aspect,
-    };
-  }, [observerCameraStateRef]);
+  }, [cameraStateScratch, observerCamera, observerCameraStateRef]);
 
   useEffect(() => {
-    const observerCamera = observerCameraRef.current;
-    if (!observerCamera) {
-      return;
-    }
-
-    const aspect = size.height > 0 ? size.width / size.height : 1;
-    observerCamera.aspect = aspect;
-    observerCamera.updateProjectionMatrix();
-    publishObserverCameraState();
-  }, [publishObserverCameraState, size.height, size.width]);
+    syncObserverCameraAspect(observerCamera, size.width, size.height);
+    publishCurrentCameraState();
+  }, [observerCamera, publishCurrentCameraState, size.height, size.width]);
 
   useEffect(() => {
-    const observerCamera = observerCameraRef.current;
-    if (!observerCamera) {
-      return;
+    const previousMode = previousModeRef.current;
+
+    if (cameraControlMode === "orbit") {
+      if (fpsControllerRef.current) {
+        disposeFpsCameraModeController(fpsControllerRef.current);
+        fpsControllerRef.current = null;
+      }
+      if (orbitControllerRef.current) {
+        disposeOrbitCameraModeController(orbitControllerRef.current);
+        orbitControllerRef.current = null;
+      }
+
+      const target = targetScratchRef.current;
+      if (previousMode === "fps") {
+        computeOrbitTargetFromCamera(
+          observerCamera,
+          orbitDistanceRef.current,
+          target,
+        );
+        orbitTargetRef.current.copy(target);
+      } else {
+        target.copy(orbitTargetRef.current);
+      }
+
+      orbitControllerRef.current = createOrbitCameraModeController(
+        observerCamera,
+        gl.domElement,
+        target,
+      );
+    } else {
+      if (orbitControllerRef.current) {
+        orbitDistanceRef.current = getOrbitDistance(orbitControllerRef.current);
+        getOrbitTarget(orbitControllerRef.current, orbitTargetRef.current);
+        disposeOrbitCameraModeController(orbitControllerRef.current);
+        orbitControllerRef.current = null;
+      }
+      if (fpsControllerRef.current) {
+        disposeFpsCameraModeController(fpsControllerRef.current);
+        fpsControllerRef.current = null;
+      }
+
+      fpsControllerRef.current = createFpsCameraModeController(
+        observerCamera,
+        gl.domElement,
+      );
     }
 
-    const controls = new ThreeOrbitControls(observerCamera, gl.domElement);
-    controls.target.set(...OBSERVER_CAMERA_DEFAULTS.target);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.autoRotate = false;
-    controls.autoRotateSpeed = 0;
-    controls.update();
-    orbitControlsRef.current = controls;
-    publishObserverCameraState();
+    previousModeRef.current = cameraControlMode;
+    publishCurrentCameraState();
+  }, [cameraControlMode, gl, observerCamera, publishCurrentCameraState]);
 
+  useEffect(() => {
     return () => {
-      controls.dispose();
-      orbitControlsRef.current = null;
+      if (orbitControllerRef.current) {
+        disposeOrbitCameraModeController(orbitControllerRef.current);
+      }
+      if (fpsControllerRef.current) {
+        disposeFpsCameraModeController(fpsControllerRef.current);
+      }
+      orbitControllerRef.current = null;
+      fpsControllerRef.current = null;
     };
-  }, [gl, publishObserverCameraState]);
+  }, []);
 
   useFrame((_, delta) => {
-    const controls = orbitControlsRef.current;
-    if (!controls) {
-      return;
+    if (cameraControlMode === "orbit") {
+      if (orbitControllerRef.current) {
+        updateOrbitCameraModeController(
+          orbitControllerRef.current,
+          autoOrbit,
+          delta,
+        );
+        orbitDistanceRef.current = getOrbitDistance(orbitControllerRef.current);
+      }
+    } else if (fpsControllerRef.current) {
+      updateFpsCameraModeController(
+        fpsControllerRef.current,
+        {
+          acceleration: fpsMoveAcceleration,
+          drag: fpsMoveDrag,
+          maxSpeed: fpsMoveMaxSpeed,
+        },
+        delta,
+      );
     }
 
-    const targetOrbitSpeed = autoOrbit ? AUTO_ORBIT_TARGET_SPEED : 0;
-    orbitSpeedRef.current = MathUtils.damp(
-      orbitSpeedRef.current,
-      targetOrbitSpeed,
-      AUTO_ORBIT_ACCELERATION,
-      delta,
-    );
-
-    const currentOrbitSpeed = orbitSpeedRef.current;
-    controls.autoRotate = Math.abs(currentOrbitSpeed) > AUTO_ORBIT_STOP_EPS;
-    controls.autoRotateSpeed = currentOrbitSpeed;
-    controls.update();
-    publishObserverCameraState();
+    publishCurrentCameraState();
   }, -1);
 
   return null;
