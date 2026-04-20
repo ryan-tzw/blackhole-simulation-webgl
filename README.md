@@ -1,73 +1,96 @@
-# React + TypeScript + Vite
+# Black Hole Simulation (WebGL)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A real-time black hole visualization built with React, Three.js, and GLSL.
 
-Currently, two official plugins are available:
+This project renders gravitational lensing around a Schwarzschild black hole and a volumetric accretion disc in real time. The focus is educational + visual: physically motivated ray bending, controllable rendering parameters, and interactive exploration.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+!['demo video'](docs/media/demo.gif)
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Visit it here: [https://blackhole-simulation-webgl.vercel.app/](https://blackhole-simulation-webgl.vercel.app/)
 
-## Expanding the ESLint configuration
+## Implemented Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Schwarzschild geodesic bending using second-order ODE in `u(phi)` integrated with RK4.
+- Adaptive geodesic step sizing for quality/performance control.
+- Volumetric accretion disc in `bend-env` using Beer-Lambert emission + absorption.
+- Span-aware segment clipping against finite annulus volume to avoid thin-volume skip artifacts.
+- Composite substep integration for stable medium sampling (reduced banding vs single-point sampling).
+- Pre-generated tileable 3D FBM noise texture for non-uniform disc structure.
+- Differential disc motion via noise advection (inner regions move faster than outer regions).
+- Relativistic-style disc appearance controls:
+  - Doppler beaming / tint controls
+  - Gravitational redshift controls
+- Orbit and FPS control modes
+- Postprocessing pipeline using `@react-three/postprocessing` (SMAA, bloom, vignette, tone mapping, noise).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Quick Start
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Controls Summary
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Controls and tweaks are exposed through Leva.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Geodesics
+
+- Core lensing parameters:
+  - Schwarzschild radius (`uRs`)
+  - max geodesic steps (`uMaxSteps`)
+  - step adaptivity (`uStepAdapt`)
+- Advanced tuning:
+  - `uPhiBudget`, `uMinStepRatio`, `uRadialStepBoost`
+
+### Accretion Disc
+
+- Enable toggle (`uEnableDiscAccumulation`)
+- Geometry: inner/outer radius, thickness (`uDiscHalfHeight`)
+- Medium: density, radial density power, absorption, softness, vertical falloff
+- Emission: strength, inner/outer colors, radial/color shaping
+- Integration quality (`uDiscIntegrationQuality`)
+- Noise: `uDiscNoiseScale`, `uDiscNoiseStrength`
+- Motion/relativity: spin/advection controls, Doppler controls, gravitational redshift controls
+
+## Rendering Pipeline Summary
+
+1. Observer camera state is updated from camera controls each frame.
+2. Main canvas renders a fullscreen triangle; fragment shader reconstructs per-pixel rays.
+3. Geodesic integration in Schwarzschild space is advanced with RK4 + adaptive stepping.
+4. In `bend-env`, each geodesic segment is clipped against accretion annulus spans.
+5. Medium contribution is accumulated using Beer-Lambert emission/absorption over substeps.
+6. Escape/capture logic resolves final ray result and environment/capture color.
+7. Final image passes through postprocessing (SMAA, bloom, vignette, ACES tone mapping, noise).
+
+## Tech Stack and Project Structure
+
+### Stack
+
+- `React 19` + `TypeScript` + `Vite`
+- `@react-three/fiber` / `Three.js`
+- GLSL shaders via `vite-plugin-glsl`
+- `@react-three/drei` and `Leva` for interaction/tools
+- `@react-three/postprocessing` for image effects
+
+### Key project areas
+
+- `src/rendering/camera/`: observer camera modes and synchronization
+- `src/rendering/components/`: canvas composition and scene wiring
+- `src/rendering/controls/`: Leva control schema and setting mapping
+- `src/rendering/materials/`: shader materials + uniform defaults
+- `src/shaders/fullscreen-pass-bend-env.frag.glsl`: primary bent environment pass
+- `src/shaders/chunks/geodesics/`: geodesic integration and adaptive stepping
+- `src/shaders/chunks/accretion/`: accretion geometry, density, motion, optics
+
+## Known Limitations
+
+- Schwarzschild-only model (no Kerr spin metric).
+- No accretion self-shadowing in current volumetric pass.
+- Calibration is artistic/heuristic in parts (disc color grading and effect tuning).
+- Possible future improvements:
+  - Kerr geodesics
+  - temporal denoising
+  - physically grounded disc temperature model
