@@ -11,17 +11,24 @@ import {
   type ObserverCameraState,
 } from "@/rendering/camera/camera-state";
 import { getSharedCubemapTexture } from "@/rendering/environment/cubemap";
+import { DebugAccretionVolume } from "./DebugAccretionVolume";
 import { FirstFrameSignal } from "./FirstFrameSignal";
 
 type PerspectiveDebugCanvasProps = {
   className?: string;
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  discInnerRadius: number;
+  discOuterRadius: number;
+  discHalfHeight: number;
   onFirstFrame?: () => void;
 };
 
 export function PerspectiveDebugCanvas({
   className,
   observerCameraStateRef,
+  discInnerRadius,
+  discOuterRadius,
+  discHalfHeight,
   onFirstFrame,
 }: PerspectiveDebugCanvasProps) {
   const sharedCubemapTexture = useMemo(() => getSharedCubemapTexture(), []);
@@ -49,6 +56,11 @@ export function PerspectiveDebugCanvas({
           metalness={0.65}
         />
       </mesh>
+      <DebugAccretionVolume
+        innerRadius={discInnerRadius}
+        outerRadius={discOuterRadius}
+        halfHeight={discHalfHeight}
+      />
 
       <Grid
         args={[16, 16]}

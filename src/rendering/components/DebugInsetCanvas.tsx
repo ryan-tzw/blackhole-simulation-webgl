@@ -4,10 +4,16 @@ import { PerspectiveDebugCanvas } from "./PerspectiveDebugCanvas";
 
 type DebugInsetCanvasProps = {
   observerCameraStateRef: RefObject<ObserverCameraState>;
+  discInnerRadius: number;
+  discOuterRadius: number;
+  discHalfHeight: number;
 };
 
 export function DebugInsetCanvas({
   observerCameraStateRef,
+  discInnerRadius,
+  discOuterRadius,
+  discHalfHeight,
 }: DebugInsetCanvasProps) {
   const [isDebugInsetReady, setIsDebugInsetReady] = useState(false);
 
@@ -22,6 +28,9 @@ export function DebugInsetCanvas({
       <PerspectiveDebugCanvas
         className="debug-inset-canvas"
         observerCameraStateRef={observerCameraStateRef}
+        discInnerRadius={discInnerRadius}
+        discOuterRadius={discOuterRadius}
+        discHalfHeight={discHalfHeight}
         onFirstFrame={handleFirstFrame}
       />
       {!isDebugInsetReady ? (

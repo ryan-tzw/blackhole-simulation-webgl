@@ -48,7 +48,12 @@ export function RenderingRoot() {
             onFirstFrame={onMainFirstFrame}
           />
           {showDebugView ? (
-            <DebugInsetCanvas observerCameraStateRef={observerCameraStateRef} />
+            <DebugInsetCanvas
+              observerCameraStateRef={observerCameraStateRef}
+              discInnerRadius={bendSettings.uDiscInnerRadius}
+              discOuterRadius={bendSettings.uDiscOuterRadius}
+              discHalfHeight={bendSettings.uDiscHalfHeight}
+            />
           ) : null}
           {cameraControlMode === "fps" ? (
             <div className="fps-help-overlay" aria-live="polite">
